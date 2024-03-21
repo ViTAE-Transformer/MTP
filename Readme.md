@@ -331,11 +331,11 @@ The remaining steps are the same as regular testing.
 If you find MTP helpful, please consider giving this repo a ⭐ and citing:
 
 ```
-@inproceedings{MTP,
+@article{MTP,
   title={{MTP}: Advancing Remote Sensing Foundation Model via Multi-Task Pretraining},
   author={Di Wang, Jing Zhang, Minqiang Xu, Lin Liu, Dongsheng Wang, Erzhong Gao, Chengxi Han, Haonan Guo, Bo Du, Dacheng Tao, Liangpei Zhang},
-  booktitle={arxiv},
-  year={arXiv preprint arXiv:2403.13430}
+  journal={arXiv preprint arXiv:2403.13430},
+  year={2024}
 }
 ```
 
