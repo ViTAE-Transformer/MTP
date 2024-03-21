@@ -278,7 +278,7 @@ python -u tools/test.py configs/mtp/loveda/rvsa-l-upernet-512-mae-mtp-loveda.py 
 --launcher="slurm" --cfg-options val_cfg=None val_dataloader=None val_evaluator=None
 ```
 
-*Note: after inferencing, the predictions of LoveDA needs to manully reduce 1 to meet the requirement of evaluation site*
+*Note: after inferencing, the predictions of LoveDA needs to manually reduce 1 to meet the requirement of evaluation site*
 
 ```
 python scripts/change_loveda_label.py
