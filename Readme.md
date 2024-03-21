@@ -72,7 +72,7 @@ SOTA-RBB will be uploaded to [Baidu](https://pan.baidu.com/s/15N7DoZj53cIXEDKw6h
 
 ## Environment
 
-#### Thie environment adopts new version OpenMMLab series to support multi-task pretraining and finetuning on various RS tasks.
+#### This environment adopts new version OpenMMLab series to support multi-task pretraining and finetuning on various RS tasks.
 
 | Package | Version | Package | Version | Package | Version |Package | Version |
 | ----- | :-----: | ----- | :-----: | ----- | :-----: | ----- | :-----: |
