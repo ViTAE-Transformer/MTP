@@ -1,17 +1,23 @@
 <h1 align="center"> MTP: Advancing Remote Sensing Foundation Model via Multi-Task Pretraining </h1>
 
+<p align="center">
+<a href="https://arxiv.org/abs/2403.13430"><img src="https://img.shields.io/badge/arXiv-Paper-<color>"></a>
+</p>
+
 <h5 align="center"><em>Di Wang, Jing Zhang, Minqiang Xu, Lin Liu, Dongsheng Wang, Erzhong Gao, Chengxi Han, Haonan Guo,  Bo Du, 
 
 Dacheng Tao and Liangpei Zhang</em></h5>
 
 <p align="center">
-  <a href="#overview">Overview</a> |
-  <a href="#datasets-and-models">Datasets and Models</a> |
-  <a href="#usage">Usage</a> |
+  <a href="#🔥-update">Update</a> |
+  <a href="#🌞-overview">Overview</a> |
+  <a href="#📖-datasets-and-models">Datasets and Models</a> |
+  <a href="#🛠️-usage">Usage</a> |
+  <a href="#🎺-statement">Statement</a>
 </p >
 
 
-## 🚩 Current applications
+# 🚩 Current applications
 
 > **Remote Sensing Related Works: Please see [Remote Sensing](https://github.com/ViTAE-Transformer/ViTAE-Transformer-Remote-Sensing)**;
 
@@ -23,10 +29,15 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 
 > Other applications: [ViTAE](https://github.com/ViTAE-Transformer/ViTAE-Transformer) | [VSA](https://github.com/ViTAE-Transformer/ViTAE-VSA) | [QFormer](https://github.com/ViTAE-Transformer/QFormer) | [ViTPose](https://github.com/ViTAE-Transformer/ViTPose) | [Matting](https://github.com/ViTAE-Transformer/ViTAE-Transformer-Matting) | [Scene Text Spotting](https://github.com/ViTAE-Transformer/ViTAE-Transformer-Scene-Text-Detection)  | [Video Object Segmentation](https://github.com/ViTAE-Transformer/VOS-LLB)
 
+# 🔥 Update
 
-# ⭐ Overview
+**2024.03.21**
 
-This is the official repository of the paper: MTP: Advancing Remote Sensing Foundation Model via Multi-Task Pretraining
+- The paper is post on arxiv!
+
+# 🌞 Overview
+
+This is the official repository of the paper: <a href="https://arxiv.org/abs/2403.13430">  MTP: Advancing Remote Sensing Foundation Model via Multi-Task Pretraining </a>
 
 <figure>
 <img src="Figs/pipeline.png">
@@ -55,7 +66,7 @@ SOTA-RBB will be uploaded to [Baidu](https://pan.baidu.com/s/15N7DoZj53cIXEDKw6h
 | MAE | Million-AID | ViT-L | Coming soon |
 | MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-B + RVSA | Coming soon |
 | MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-L + RVSA | Coming soon |
-| IMP + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS)| ViT-B + RVSA | Coming soon |
+| IMP + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS)| InternImage-XL | Coming soon |
 
 # 🛠️ Usage
 
@@ -107,6 +118,34 @@ The training can be recovered by setting `--ft` and `--resume`
 ```
 --ft 'True' --resume [path of saved multi-task pretrained model]
 ```
+
+## Preparing Finetuning Dataset
+
+**For Xview** using `scripts/prepare_xview_dataset.py`, it contains the following functions:
+
+* Transform geojson to labels in yolo format
+* Divide training and testing sets
+* Clip images and yolo format labels
+* Transform yolo format labels to COCO format *.json
+
+**For DIOR**: transform *.xml to COCO *.json format for feeding into MMDetection
+
+```
+python scripts/dior_h_2_coco.py
+```
+
+**For FAIR1M**: transform *.txt in DOTA format to required *.xml for submitting
+
+```
+python scripts/dota_submit_txt_to_fair1m_xml.py --txt_dir [path of *.txt]
+```
+
+**For SpaceNetv1**: extracting segmentation mask from geojson
+
+```
+python scripts/process_spacenet.py
+```
+
 
 ## Finetuning on Various RS tasks
 
@@ -286,6 +325,19 @@ Take an example of reusing segmentation decoder in finetuning:
     --cfg-options 'find_unused_parameters'=True load_from=[path of the revised weights]
     ```
 The remaining steps are the same as regular testing.
+
+## 🎵 Citation
+
+If you find MTP helpful, please consider giving this repo a ⭐ and citing:
+
+```
+@inproceedings{MTP,
+  title={{MTP}: Advancing Remote Sensing Foundation Model via Multi-Task Pretraining},
+  author={Di Wang, Jing Zhang, Minqiang Xu, Lin Liu, Dongsheng Wang, Erzhong Gao, Chengxi Han, Haonan Guo, Bo Du, Dacheng Tao, Liangpei Zhang},
+  booktitle={arxiv},
+  year={arXiv preprint arXiv:2403.13430}
+}
+```
 
 ## 🎺 Statement
 
