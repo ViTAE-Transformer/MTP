@@ -121,7 +121,7 @@ The training can be recovered by setting `--ft` and `--resume`
 
 ## Preparing Finetuning Dataset
 
-**For Xview** using `scripts/prepare_xview_dataset.py`, it contains the following functions:
+**For Xview**: using `scripts/prepare_xview_dataset.py`, it contains the following functions:
 
 * Transform geojson to labels in yolo format
 * Divide training and testing sets
