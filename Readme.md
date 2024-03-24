@@ -76,12 +76,12 @@ SOTA-RBB will be uploaded to [Baidu](https://pan.baidu.com/s/15N7DoZj53cIXEDKw6h
 
 ## Pretrained Models
 
-| Pretrain | Pretraining Dataset | Backbone | Weights |
-| :------- | :------: | :------ | :-----: |
-| MAE | Million-AID | ViT-L | Coming soon |
-| MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-B + RVSA | Coming soon |
-| MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-L + RVSA | Coming soon |
-| IMP + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS)| InternImage-XL | Coming soon |
+| Pretrain | Pretraining Dataset | Backbone | Backbone Weights | Model Weights |
+| :------- | :------: | :------ | :-----: | :-----: |
+| MAE | Million-AID | ViT-L | Coming soon | Coming soon |
+| MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-B + RVSA | Coming soon | Coming soon |
+| MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-L + RVSA | Coming soon | Coming soon |
+| IMP + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS)| InternImage-XL | Coming soon | Coming soon |
 
 # 🛠️ Usage
 
