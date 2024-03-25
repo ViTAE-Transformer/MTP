@@ -46,6 +46,10 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 
 # 🔥 Update
 
+**2024.03.26**
+
+- The pretrained models are released!
+
 **2024.03.25**
 
 - The SOTA-RBB set of the pretraining dataset is uploaded to [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2yD0y9HD_Q?e=ErZXPS) and [Baidu](https://pan.baidu.com/s/15N7DoZj53cIXEDKw6hzD4A?pwd=q9u6)!
@@ -82,10 +86,10 @@ We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2
 
 | Pretrain | Pretraining Dataset | Backbone | Backbone Weights | Model Weights |
 | :------- | :------: | :------ | :-----: | :-----: |
-| MAE | Million-AID | ViT-L | Coming soon | Coming soon |
-| MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-B + RVSA | Coming soon | Coming soon |
-| MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-L + RVSA | Coming soon | Coming soon |
-| IMP + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS)| InternImage-XL | Coming soon | Coming soon |
+| MAE | Million-AID | ViT-L | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) | - |
+| MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-B + RVSA | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) |
+| MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-L + RVSA | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) |
+| IMP + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS)| InternImage-XL | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) |
 
 # 🛠️ Usage
 
