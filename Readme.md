@@ -48,7 +48,7 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 
 **2024.03.25**
 
-- The SOTA-RBB set of the pretraining dataset is uploaded to [[OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2yD0y9HD_Q?e=ErZXPS)] and [[Baidu](https://pan.baidu.com/s/15N7DoZj53cIXEDKw6hzD4A?pwd=q9u6)]!
+- The SOTA-RBB set of the pretraining dataset is uploaded to [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2yD0y9HD_Q?e=ErZXPS) and [Baidu](https://pan.baidu.com/s/15N7DoZj53cIXEDKw6hzD4A?pwd=q9u6)!
 
 **2024.03.21**
 
