@@ -46,6 +46,10 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 
 # 🔥 Update
 
+**2024.03.25**
+
+- The SOTA-RBB set of the pretraining dataset is uploaded to [[OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2yD0y9HD_Q?e=ErZXPS)] and [[Baidu](https://pan.baidu.com/s/15N7DoZj53cIXEDKw6hzD4A?pwd=q9u6)]!
+
 **2024.03.21**
 
 - The paper is post on arxiv!
@@ -72,7 +76,7 @@ We clip the DOTA-2.0 rotated bounding box version and produce the segmentation l
 
 **SOTA-RBB and the SIOR and FAST of original SAMRS** is together used for implementing MTP.
 
-SOTA-RBB will be uploaded to [Baidu](https://pan.baidu.com/s/15N7DoZj53cIXEDKw6hzD4A?pwd=q9u6) and [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2yD0y9HD_Q?e=ErZXPS).
+We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2yD0y9HD_Q?e=ErZXPS) and [Baidu](https://pan.baidu.com/s/15N7DoZj53cIXEDKw6hzD4A?pwd=q9u6).
 
 ## Pretrained Models
 
