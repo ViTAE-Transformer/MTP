@@ -104,9 +104,9 @@ We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2
 | MAE + MTP | EuroSAT| ViT-B ＋ RVSA | 98.76 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
 | MAE + MTP | EuroSAT| ViT-L ＋ RVSA | 98.78 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
 | IMP + MTP | EuroSAT| InternImage-XL | 99.24 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
-| MAE + MTP | RESISC-45| ViT-B ＋ RVSA | 98.76 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
-| MAE + MTP | RESISC-45| ViT-L ＋ RVSA | 98.78 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY)  |
-| IMP + MTP | RESISC-45| InternImage-XL | 99.24 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY)  |
+| MAE + MTP | RESISC-45| ViT-B ＋ RVSA | 95.57 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
+| MAE + MTP | RESISC-45| ViT-L ＋ RVSA | 95.88 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY)  |
+| IMP + MTP | RESISC-45| InternImage-XL | 96.27 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY)  |
 
 
 # 🛠️ Usage
