@@ -46,6 +46,10 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 
 # 🔥 Update
 
+**2024.03.27**
+
+- The classification finetuned models are released!
+
 **2024.03.26**
 
 - The pretrained models are released!
@@ -90,6 +94,20 @@ We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2
 | MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-B + RVSA | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) |
 | MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-L + RVSA | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) |
 | IMP + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS)| InternImage-XL | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) |
+
+## Finetuned Models
+
+### Classification
+
+| Pretrain | Dataset | Backbone | OA | Config | Log | Weights |
+| :------- | :------ | :------ | :-----: | :-----: |:-----: | :-----: |
+| MAE + MTP | EuroSAT| ViT-B ＋ RVSA | 98.76 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
+| MAE + MTP | EuroSAT| ViT-L ＋ RVSA | 98.78 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
+| IMP + MTP | EuroSAT| InternImage-XL | 99.24 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
+| MAE + MTP | RESISC-45| ViT-B ＋ RVSA | 98.76 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
+| MAE + MTP | RESISC-45| ViT-L ＋ RVSA | 98.78 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY)  |
+| IMP + MTP | RESISC-45| InternImage-XL | 99.24 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY)  |
+
 
 # 🛠️ Usage
 
