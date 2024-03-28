@@ -46,6 +46,10 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 
 # 🔥 Update
 
+**2024.03.28**
+
+- The horizontal detection finetuned models are released!
+
 **2024.03.27**
 
 - The classification finetuned models are released!
@@ -107,6 +111,17 @@ We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2
 | MAE + MTP | RESISC-45| ViT-B ＋ RVSA | 95.57 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
 | MAE + MTP | RESISC-45| ViT-L ＋ RVSA | 95.88 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY)  |
 | IMP + MTP | RESISC-45| InternImage-XL | 96.27 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY)  |
+
+### Horizontal Object Detection
+
+| Pretrain | Dataset | Backbone | Method | OA | Config | Log | Weights |
+| :------- | :------ | :------ | :----- | :-----: | :-----: |:-----: | :-----: |
+| MAE + MTP | Xview | ViT-B ＋ RVSA | RetinaNet | 16.40 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw) |
+| MAE + MTP | Xview | ViT-L ＋ RVSA | RetinaNet| 19.40 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw) |
+| IMP + MTP | Xview | InternImage-XL| RetinaNet | 18.20 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw) |
+| MAE + MTP | DIOR | ViT-B ＋ RVSA | Faster-RCNN | 79.00 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)|
+| MAE + MTP | DIOR | ViT-L ＋ RVSA | Faster-RCNN | 81.60 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)  |
+| IMP + MTP | DIOR | InternImage-XL | Faster-RCNN | 77.50 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)  |
 
 
 # 🛠️ Usage
