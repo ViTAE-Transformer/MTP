@@ -48,7 +48,7 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 
 **2024.03.28**
 
-- The horizontal detection finetuned models are released!
+- The finetuned models of horizontal and rotated object detections are released!
 
 **2024.03.27**
 
@@ -122,6 +122,20 @@ We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2
 | MAE + MTP | DIOR | ViT-B ＋ RVSA | Faster-RCNN | 79.00 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)|
 | MAE + MTP | DIOR | ViT-L ＋ RVSA | Faster-RCNN | 81.60 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)  |
 | IMP + MTP | DIOR | InternImage-XL | Faster-RCNN | 77.50 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)  |
+
+
+### Rotated Object Detection (SLURM part)
+
+| Pretrain | Dataset | Backbone | Method | mAP | Config | Log | Weights |
+| :------- | :------ | :------ | :----- | :-----: | :-----: |:-----: | :-----: |
+| MAE + MTP | DIOR-R | ViT-B ＋ RVSA | Oriented-RCNN | 71.29 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
+| MAE + MTP | DIOR-R | ViT-L ＋ RVSA | Oriented-RCNN | 74.54 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
+| IMP + MTP | DIOR-R | InternImage-XL| Oriented-RCNN | 72.17 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
+| MAE + MTP | FAIR1M-2.0 | ViT-B ＋ RVSA | Oriented-RCNN | 51.92 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
+| MAE + MTP | FAIR1M-2.0 | ViT-L ＋ RVSA | Oriented-RCNN | 53.00 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
+| IMP + MTP | FAIR1M-2.0 | InternImage-XL | Oriented-RCNN | 50.93 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
+
+
 
 
 # 🛠️ Usage
