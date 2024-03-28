@@ -226,7 +226,7 @@ Training on DIOR using Faster-RCNN with a backbone network of MAE + MTP pretrain
 srun -J mmdet -p gpu --gres=dcu:4 --ntasks=4 --ntasks-per-node=4 --cpus-per-task=8 --kill-on-bad-exit=1 \
 python -u tools/train.py configs/mtp/dior/faster_rcnn_rvsa_l_800_mae_mtp_dior.py \
 --work-dir=/diwang/work_dir/multitask_pretrain/finetune/Horizontal_Detection/dior/faster_rcnn_rvsa_l_800_mae_mtp_dior \
---launcher="slurm" --cfg-options 'find_unused_parameters'=True
+--launcher="slurm" 
 ```
 
 Then testing and generating dection results:
