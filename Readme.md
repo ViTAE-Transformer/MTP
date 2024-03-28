@@ -114,7 +114,7 @@ We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2
 
 ### Horizontal Object Detection
 
-| Pretrain | Dataset | Backbone | Method | OA | Config | Log | Weights |
+| Pretrain | Dataset | Backbone | Method | AP50 | Config | Log | Weights |
 | :------- | :------ | :------ | :----- | :-----: | :-----: |:-----: | :-----: |
 | MAE + MTP | Xview | ViT-B ＋ RVSA | RetinaNet | 16.40 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw) |
 | MAE + MTP | Xview | ViT-L ＋ RVSA | RetinaNet| 19.40 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw) |
