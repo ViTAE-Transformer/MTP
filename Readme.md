@@ -103,8 +103,8 @@ We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2
 | Pretrain | Pretraining Dataset | Backbone | Backbone Weights | Model Weights |
 | :------- | :------: | :------ | :-----: | :-----: |
 | MAE | Million-AID | ViT-L | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) | - |
-| MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-B + RVSA | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) |
-| MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-L + RVSA | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) |
+| MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-B+RVSA | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) |
+| MAE + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS) | ViT-L+RVSA | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) |
 | IMP + MTP | [SAMRS](https://github.com/ViTAE-Transformer/SAMRS)| InternImage-XL | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) | [Baidu](https://pan.baidu.com/s/1Zh6yv2AouboGEP4phyR7xA?pwd=yqv9) & [OneDrive](https://1drv.ms/f/s!AimBgYV7JjTlgcpa7t2sywuWOm3HQA?e=LAh8WN) |
 
 ## Finetuned Models
@@ -113,22 +113,22 @@ We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2
 
 | Pretrain | Dataset | Backbone | OA | Config | Log | Weights |
 | :------- | :------ | :------ | :-----: | :-----: |:-----: | :-----: |
-| MAE + MTP | EuroSAT| ViT-B ＋ RVSA | 98.76 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
-| MAE + MTP | EuroSAT| ViT-L ＋ RVSA | 98.78 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
+| MAE + MTP | EuroSAT| ViT-B＋RVSA | 98.76 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
+| MAE + MTP | EuroSAT| ViT-L＋RVSA | 98.78 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
 | IMP + MTP | EuroSAT| InternImage-XL | 99.24 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
-| MAE + MTP | RESISC-45| ViT-B ＋ RVSA | 95.57 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
-| MAE + MTP | RESISC-45| ViT-L ＋ RVSA | 95.88 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY)  |
+| MAE + MTP | RESISC-45| ViT-B＋RVSA | 95.57 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY) |
+| MAE + MTP | RESISC-45| ViT-L＋RVSA | 95.88 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY)  |
 | IMP + MTP | RESISC-45| InternImage-XL | 96.27 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1w4ORVO4Q4XGzOJY0NMBy8Q?pwd=jsoc) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gTwi2qBsPuiSrgrL?e=utqMdY)  |
 
 ### Horizontal Object Detection
 
 | Pretrain | Dataset | Backbone | Method | AP50 | Config | Log | Weights |
 | :------- | :------ | :------ | :----- | :-----: | :-----: |:-----: | :-----: |
-| MAE + MTP | Xview | ViT-B ＋ RVSA | RetinaNet | 16.40 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw) |
-| MAE + MTP | Xview | ViT-L ＋ RVSA | RetinaNet| 19.40 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw) |
+| MAE + MTP | Xview | ViT-B＋RVSA | RetinaNet | 16.40 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw) |
+| MAE + MTP | Xview | ViT-L＋RVSA | RetinaNet| 19.40 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw) |
 | IMP + MTP | Xview | InternImage-XL| RetinaNet | 18.20 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw) |
-| MAE + MTP | DIOR | ViT-B ＋ RVSA | Faster-RCNN | 79.00 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)|
-| MAE + MTP | DIOR | ViT-L ＋ RVSA | Faster-RCNN | 81.60 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)  |
+| MAE + MTP | DIOR | ViT-B＋RVSA | Faster-RCNN | 79.00 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)|
+| MAE + MTP | DIOR | ViT-L＋RVSA | Faster-RCNN | 81.60 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)  |
 | IMP + MTP | DIOR | InternImage-XL | Faster-RCNN | 77.50 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)  |
 
 
@@ -136,22 +136,22 @@ We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2
 
 | Pretrain | Dataset | Backbone | Method | mAP | Config | Log | Weights |
 | :------- | :------ | :------ | :----- | :-----: | :-----: |:-----: | :-----: |
-| MAE + MTP | DIOR-R | ViT-B ＋ RVSA | Oriented-RCNN | 71.29 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
-| MAE + MTP | DIOR-R | ViT-L ＋ RVSA | Oriented-RCNN | 74.54 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
+| MAE + MTP | DIOR-R | ViT-B＋RVSA | Oriented-RCNN | 71.29 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
+| MAE + MTP | DIOR-R | ViT-L＋RVSA | Oriented-RCNN | 74.54 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
 | IMP + MTP | DIOR-R | InternImage-XL| Oriented-RCNN | 72.17 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
-| MAE + MTP | FAIR1M-2.0 | ViT-B ＋ RVSA | Oriented-RCNN | 51.92 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
-| MAE + MTP | FAIR1M-2.0 | ViT-L ＋ RVSA | Oriented-RCNN | 53.00 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
+| MAE + MTP | FAIR1M-2.0 | ViT-B＋RVSA | Oriented-RCNN | 51.92 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
+| MAE + MTP | FAIR1M-2.0 | ViT-L＋RVSA | Oriented-RCNN | 53.00 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
 | IMP + MTP | FAIR1M-2.0 | InternImage-XL | Oriented-RCNN | 50.93 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
 
 ### Semantic Segmentation
 
 | Pretrain | Dataset | Backbone | Method | mIOU | Config | Log | Weights |
 | :------- | :------ | :------ | :----- | :-----: | :-----: |:-----: | :-----: |
-| MAE + MTP | SpaceNetv1 | ViT-B ＋ RVSA | UperNet | 79.63 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI) |
-| MAE + MTP | SpaceNetv1 | ViT-L ＋ RVSA | UperNet | 79.54 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI)  |
+| MAE + MTP | SpaceNetv1 | ViT-B＋RVSA | UperNet | 79.63 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI) |
+| MAE + MTP | SpaceNetv1 | ViT-L＋RVSA | UperNet | 79.54 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI)  |
 | IMP + MTP | SpaceNetv1 | InternImage-XL| UperNet | 79.16 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI)  |
-| MAE + MTP | LoveDA | ViT-B ＋ RVSA | UperNet| 52.39 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI) |
-| MAE + MTP | LoveDA | ViT-L ＋ RVSA | UperNet | 54.17 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI)  |
+| MAE + MTP | LoveDA | ViT-B＋RVSA | UperNet| 52.39 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI) |
+| MAE + MTP | LoveDA | ViT-L＋RVSA | UperNet | 54.17 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI)  |
 | IMP + MTP | LoveDA | InternImage-XL | UperNet | 54.17 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI)   |
 
 
