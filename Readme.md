@@ -48,6 +48,10 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 
 **2024.03.29**
 
+- The *change detection* finetuned models are released!
+
+**2024.03.29**
+
 - The *semantic segmentation* finetuned models are released!
 
 **2024.03.28**
