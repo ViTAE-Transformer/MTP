@@ -46,13 +46,21 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 
 # 🔥 Update
 
+**2024.03.29**
+
+- The *semantic segmentation* finetuned models are released!
+
 **2024.03.28**
 
-- The finetuned models of horizontal and rotated object detections are released!
+- The *rotated object detection* finetuned models are released!
+
+**2024.03.28**
+
+- The *horizontal object detection* finetuned models are released!
 
 **2024.03.27**
 
-- The classification finetuned models are released!
+- The *scene classification* finetuned models are released!
 
 **2024.03.26**
 
@@ -101,7 +109,7 @@ We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2
 
 ## Finetuned Models
 
-### Classification
+### Scene Classification
 
 | Pretrain | Dataset | Backbone | OA | Config | Log | Weights |
 | :------- | :------ | :------ | :-----: | :-----: |:-----: | :-----: |
@@ -135,6 +143,16 @@ We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2
 | MAE + MTP | FAIR1M-2.0 | ViT-L ＋ RVSA | Oriented-RCNN | 53.00 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
 | IMP + MTP | FAIR1M-2.0 | InternImage-XL | Oriented-RCNN | 50.93 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1K7yCPmr1kGd--QRWnaEjMg?pwd=1o98) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUqBkd0jFEDi2bkJ?e=ja8jJK) |
 
+### Semantic Segmentation
+
+| Pretrain | Dataset | Backbone | Method | mIOU | Config | Log | Weights |
+| :------- | :------ | :------ | :----- | :-----: | :-----: |:-----: | :-----: |
+| MAE + MTP | SpaceNetv1 | ViT-B ＋ RVSA | UperNet | 79.63 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI) |
+| MAE + MTP | SpaceNetv1 | ViT-L ＋ RVSA | UperNet | 79.54 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI)  |
+| IMP + MTP | SpaceNetv1 | InternImage-XL| UperNet | 79.16 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI)  |
+| MAE + MTP | LoveDA | ViT-B ＋ RVSA | UperNet| 52.39 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI) |
+| MAE + MTP | LoveDA | ViT-L ＋ RVSA | UperNet | 54.17 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI)  |
+| IMP + MTP | LoveDA | InternImage-XL | UperNet | 54.17 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1H0ZaPRcxfuyVLjK5hrsSQw?pwd=udv5) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVGc75VWbetEGbZ0?e=VawLcI)   |
 
 
 
