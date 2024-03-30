@@ -458,7 +458,7 @@ This project is for research purpose only. For any other questions please contac
 ## 💖 Thanks
 
 * [segment-anything](https://github.com/facebookresearch/segment-anything), [BBoxToolkit](https://github.com/jbwang1997/BboxToolkit)
-* [RSPrompter](https://github.com/KyanChen/RSPrompter), [InternImage](https://github.com/OpenGVLab/InternImage)
+* [RSPrompter](https://github.com/KyanChen/RSPrompter), [InternImage](https://github.com/OpenGVLab/InternImage), [DIOR2COCO](https://blog.csdn.net/qq_20793791/article/details/110881417), [ultralytics](https://github.com/ultralytics/ultralytics/tree/main), [spacenet_building_detection](https://github.com/motokimura/spacenet_building_detection)
 * [MMCV](https://github.com/open-mmlab/mmcv), [MMEngine](https://github.com/open-mmlab/mmengine), [MMPretrain](https://github.com/open-mmlab/mmpretrain), [MMSegmentation](https://github.com/open-mmlab/mmsegmentation), [MMDetection](https://github.com/open-mmlab/mmdetection), [MMRotate](https://github.com/open-mmlab/mmrotate), [Open-CD](https://github.com/likyoo/open-cd)
 
 ## 💡 Relevant Projects
