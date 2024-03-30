@@ -132,8 +132,8 @@ We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2
 | MAE + MTP | Xview | ViT-L＋RVSA | RetinaNet| 19.40 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw) |
 | IMP + MTP | Xview | InternImage-XL| RetinaNet | 18.20 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw) |
 | MAE + MTP | DIOR | ViT-B＋RVSA | Faster-RCNN | 79.00 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)|
-| MAE + MTP | DIOR | ViT-L＋RVSA | Faster-RCNN | 81.60 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)  |
-| IMP + MTP | DIOR | InternImage-XL | Faster-RCNN | 77.50 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)  |
+| MAE + MTP | DIOR | ViT-L＋RVSA | Faster-RCNN | 81.70 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)  |
+| IMP + MTP | DIOR | InternImage-XL | Faster-RCNN | 78.30 | Coming Soon | Coming Soon | [Baidu](https://pan.baidu.com/s/1yiJISQYg0Xl84PvZr_r84w?pwd=ag0x) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gUNIOKO-VtlKyT4d?e=NXA4Nw)  |
 
 
 ### Rotated Object Detection (SLURM part)

@@ -1,0 +1,1585 @@
+2024/01/30 21:28:31 - mmengine - INFO - Config:
+crop_size = (
+    224,
+    224,
+)
+data_preprocessor = dict(
+    bgr_to_rgb=True,
+    mean=[
+        123.675,
+        116.28,
+        103.53,
+        123.675,
+        116.28,
+        103.53,
+    ],
+    pad_val=0,
+    seg_pad_val=255,
+    size_divisor=32,
+    std=[
+        58.395,
+        57.12,
+        57.375,
+        58.395,
+        57.12,
+        57.375,
+    ],
+    test_cfg=dict(size_divisor=32),
+    type='DualInputSegDataPreProcessor')
+data_root = '/work/share/achk2o1zg1/diwang22/dataset/OSCD/oscd_rgb_patch_dataset'
+dataset_type = 'OSCD_RGB_CD_Dataset'
+default_hooks = dict(
+    checkpoint=dict(
+        by_epoch=True, interval=10, save_best='mIoU', type='CheckpointHook'),
+    logger=dict(interval=10, log_metric_by_epoch=False, type='LoggerHook'),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    timer=dict(type='IterTimerHook'),
+    visualization=dict(draw=True, interval=1, type='CDVisualizationHook'))
+default_scope = 'opencd'
+env_cfg = dict(
+    cudnn_benchmark=True,
+    dist_cfg=dict(backend='nccl'),
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+find_unused_parameters = True
+launcher = 'slurm'
+load_from = None
+log_level = 'INFO'
+log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
+model = dict(
+    backbone=dict(
+        attn_drop_rate=0.0,
+        depth=12,
+        drop_path_rate=0.3,
+        drop_rate=0.0,
+        embed_dim=768,
+        frozen_stages=12,
+        img_size=224,
+        mlp_ratio=4,
+        num_heads=12,
+        out_indices=[
+            3,
+            5,
+            7,
+            11,
+        ],
+        patch_size=16,
+        pretrained='/work/home/acdtzwus6v/dw/pretrn/vit-b-checkpoint-1599.pth',
+        qk_scale=None,
+        qkv_bias=True,
+        type='RVSA_MTP',
+        use_abs_pos_emb=True,
+        use_checkpoint=False),
+    data_preprocessor=dict(
+        bgr_to_rgb=True,
+        mean=[
+            123.675,
+            116.28,
+            103.53,
+            123.675,
+            116.28,
+            103.53,
+        ],
+        pad_val=0,
+        seg_pad_val=255,
+        size_divisor=32,
+        std=[
+            58.395,
+            57.12,
+            57.375,
+            58.395,
+            57.12,
+            57.375,
+        ],
+        test_cfg=dict(size_divisor=32),
+        type='DualInputSegDataPreProcessor'),
+    decode_head=dict(
+        align_corners=False,
+        attention_type=None,
+        center=False,
+        channels=64,
+        decoder_channels=[
+            512,
+            256,
+            128,
+            64,
+        ],
+        dropout_ratio=0.1,
+        encoder_channels=[
+            768,
+            768,
+            768,
+            768,
+        ],
+        ignore_index=255,
+        in_channels=[
+            768,
+            768,
+            768,
+            768,
+        ],
+        in_index=[
+            0,
+            1,
+            2,
+            3,
+        ],
+        loss_decode=dict(
+            loss_weight=1.0, type='mmseg.CrossEntropyLoss', use_sigmoid=False),
+        n_blocks=4,
+        norm_cfg=dict(requires_grad=True, type='SyncBN'),
+        num_classes=2,
+        type='UNetHead',
+        use_batchnorm=True),
+    neck=dict(
+        out_indices=(
+            0,
+            1,
+            2,
+            3,
+        ),
+        policy='abs_diff',
+        type='FeatureFusionNeck'),
+    test_cfg=dict(mode='whole'),
+    train_cfg=dict(),
+    type='SiamEncoderDecoder')
+norm_cfg = dict(requires_grad=True, type='SyncBN')
+optim_wrapper = dict(
+    constructor='LayerDecayOptimizerConstructor_ViT',
+    optimizer=dict(
+        betas=(
+            0.9,
+            0.999,
+        ), lr=6e-05, type='AdamW', weight_decay=0.05),
+    paramwise_cfg=dict(layer_decay_rate=0.9, num_layers=12))
+param_scheduler = [
+    dict(
+        begin=0,
+        by_epoch=True,
+        convert_to_iter_based=True,
+        end=5,
+        start_factor=1e-06,
+        type='LinearLR'),
+    dict(T_max=95, begin=5, by_epoch=True, end=100, type='CosineAnnealingLR'),
+]
+resume = False
+test_cfg = dict(type='TestLoop')
+test_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        data_prefix=dict(
+            img_path_from='test/A',
+            img_path_to='test/B',
+            seg_map_path='test/label'),
+        data_root=
+        '/work/share/achk2o1zg1/diwang22/dataset/OSCD/oscd_rgb_patch_dataset',
+        pipeline=[
+            dict(type='MultiImgLoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                224,
+                224,
+            ), type='MultiImgResize'),
+            dict(type='MultiImgLoadAnnotations'),
+            dict(type='MultiImgPackSegInputs'),
+        ],
+        type='OSCD_RGB_CD_Dataset'),
+    num_workers=8,
+    persistent_workers=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+test_evaluator = dict(
+    iou_metrics=[
+        'mFscore',
+        'mIoU',
+    ], type='mmseg.IoUMetric')
+train_cfg = dict(max_epochs=100, type='EpochBasedTrainLoop', val_interval=20)
+train_dataloader = dict(
+    batch_size=4,
+    dataset=dict(
+        data_prefix=dict(
+            img_path_from='train/A',
+            img_path_to='train/B',
+            seg_map_path='train/label'),
+        data_root=
+        '/work/share/achk2o1zg1/diwang22/dataset/OSCD/oscd_rgb_patch_dataset',
+        pipeline=[
+            dict(type='MultiImgLoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                224,
+                224,
+            ), type='MultiImgResize'),
+            dict(type='MultiImgLoadAnnotations'),
+            dict(
+                degree=(
+                    -20,
+                    20,
+                ),
+                flip_prob=0.5,
+                rotate_prob=0.5,
+                type='MultiImgRandomRotFlip'),
+            dict(
+                cat_max_ratio=0.75,
+                crop_size=(
+                    224,
+                    224,
+                ),
+                type='MultiImgRandomCrop'),
+            dict(prob=0.5, type='MultiImgExchangeTime'),
+            dict(
+                brightness_delta=10,
+                contrast_range=(
+                    0.8,
+                    1.2,
+                ),
+                hue_delta=10,
+                saturation_range=(
+                    0.8,
+                    1.2,
+                ),
+                type='MultiImgPhotoMetricDistortion'),
+            dict(type='MultiImgPackSegInputs'),
+        ],
+        type='OSCD_RGB_CD_Dataset'),
+    num_workers=8,
+    persistent_workers=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+train_pipeline = [
+    dict(type='MultiImgLoadImageFromFile'),
+    dict(keep_ratio=True, scale=(
+        224,
+        224,
+    ), type='MultiImgResize'),
+    dict(type='MultiImgLoadAnnotations'),
+    dict(
+        degree=(
+            -20,
+            20,
+        ),
+        flip_prob=0.5,
+        rotate_prob=0.5,
+        type='MultiImgRandomRotFlip'),
+    dict(
+        cat_max_ratio=0.75, crop_size=(
+            224,
+            224,
+        ), type='MultiImgRandomCrop'),
+    dict(prob=0.5, type='MultiImgExchangeTime'),
+    dict(
+        brightness_delta=10,
+        contrast_range=(
+            0.8,
+            1.2,
+        ),
+        hue_delta=10,
+        saturation_range=(
+            0.8,
+            1.2,
+        ),
+        type='MultiImgPhotoMetricDistortion'),
+    dict(type='MultiImgPackSegInputs'),
+]
+val_cfg = dict(type='ValLoop')
+val_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        data_prefix=dict(
+            img_path_from='test/A',
+            img_path_to='test/B',
+            seg_map_path='test/label'),
+        data_root=
+        '/work/share/achk2o1zg1/diwang22/dataset/OSCD/oscd_rgb_patch_dataset',
+        pipeline=[
+            dict(type='MultiImgLoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                224,
+                224,
+            ), type='MultiImgResize'),
+            dict(type='MultiImgLoadAnnotations'),
+            dict(type='MultiImgPackSegInputs'),
+        ],
+        type='OSCD_RGB_CD_Dataset'),
+    num_workers=8,
+    persistent_workers=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+val_evaluator = dict(
+    iou_metrics=[
+        'mFscore',
+        'mIoU',
+    ], type='mmseg.IoUMetric')
+val_pipeline = [
+    dict(type='MultiImgLoadImageFromFile'),
+    dict(keep_ratio=True, scale=(
+        224,
+        224,
+    ), type='MultiImgResize'),
+    dict(type='MultiImgLoadAnnotations'),
+    dict(type='MultiImgPackSegInputs'),
+]
+vis_backends = [
+    dict(type='CDLocalVisBackend'),
+]
+visualizer = dict(
+    alpha=1.0,
+    name='visualizer',
+    type='CDLocalVisualizer',
+    vis_backends=[
+        dict(type='CDLocalVisBackend'),
+    ])
+work_dir = '/work/share/achk2o1zg1/diwang22/work_dir/multitask_pretrain/finetune/Change_Detection/oscd_rgb/rvsa-b-unet-96-mae_oscd_rgb'
+
+2024/01/30 21:29:43 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) CDVisualizationHook                
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) CDVisualizationHook                
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) CDVisualizationHook                
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+2024/01/30 21:29:45 - mmengine - WARNING - The prefix is not set in metric class IoUMetric.
+Name of parameter - Initialization information
+
+backbone.pos_embed - torch.Size([1, 196, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.patch_embed.proj.weight - torch.Size([768, 3, 16, 16]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.patch_embed.proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.0.norm1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.0.norm1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.0.attn.rel_pos_h - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.0.attn.rel_pos_w - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.0.attn.relative_position_bias_table - torch.Size([169, 12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.0.attn.sampling_offsets.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.0.attn.sampling_offsets.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.0.attn.sampling_scales.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.0.attn.sampling_scales.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.0.attn.sampling_angles.2.weight - torch.Size([12, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.0.attn.sampling_angles.2.bias - torch.Size([12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.0.attn.qkv.weight - torch.Size([2304, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.0.attn.qkv.bias - torch.Size([2304]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.0.attn.proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.0.attn.proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.0.norm2.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.0.norm2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.0.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.0.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.0.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.0.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.1.norm1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.1.norm1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.1.attn.rel_pos_h - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.1.attn.rel_pos_w - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.1.attn.relative_position_bias_table - torch.Size([169, 12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.1.attn.sampling_offsets.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.1.attn.sampling_offsets.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.1.attn.sampling_scales.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.1.attn.sampling_scales.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.1.attn.sampling_angles.2.weight - torch.Size([12, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.1.attn.sampling_angles.2.bias - torch.Size([12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.1.attn.qkv.weight - torch.Size([2304, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.1.attn.qkv.bias - torch.Size([2304]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.1.attn.proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.1.attn.proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.1.norm2.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.1.norm2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.1.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.1.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.1.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.1.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.2.norm1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.2.norm1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.2.attn.full_attn_rel_pos_h - torch.Size([27, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.2.attn.full_attn_rel_pos_w - torch.Size([27, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.2.attn.qkv.weight - torch.Size([2304, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.2.attn.qkv.bias - torch.Size([2304]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.2.attn.proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.2.attn.proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.2.norm2.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.2.norm2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.2.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.2.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.2.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.2.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.3.norm1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.3.norm1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.3.attn.rel_pos_h - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.3.attn.rel_pos_w - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.3.attn.relative_position_bias_table - torch.Size([169, 12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.3.attn.sampling_offsets.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.3.attn.sampling_offsets.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.3.attn.sampling_scales.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.3.attn.sampling_scales.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.3.attn.sampling_angles.2.weight - torch.Size([12, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.3.attn.sampling_angles.2.bias - torch.Size([12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.3.attn.qkv.weight - torch.Size([2304, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.3.attn.qkv.bias - torch.Size([2304]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.3.attn.proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.3.attn.proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.3.norm2.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.3.norm2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.3.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.3.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.3.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.3.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.4.norm1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.4.norm1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.4.attn.rel_pos_h - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.4.attn.rel_pos_w - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.4.attn.relative_position_bias_table - torch.Size([169, 12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.4.attn.sampling_offsets.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.4.attn.sampling_offsets.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.4.attn.sampling_scales.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.4.attn.sampling_scales.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.4.attn.sampling_angles.2.weight - torch.Size([12, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.4.attn.sampling_angles.2.bias - torch.Size([12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.4.attn.qkv.weight - torch.Size([2304, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.4.attn.qkv.bias - torch.Size([2304]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.4.attn.proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.4.attn.proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.4.norm2.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.4.norm2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.4.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.4.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.4.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.4.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.5.norm1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.5.norm1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.5.attn.full_attn_rel_pos_h - torch.Size([27, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.5.attn.full_attn_rel_pos_w - torch.Size([27, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.5.attn.qkv.weight - torch.Size([2304, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.5.attn.qkv.bias - torch.Size([2304]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.5.attn.proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.5.attn.proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.5.norm2.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.5.norm2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.5.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.5.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.5.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.5.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.6.norm1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.6.norm1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.6.attn.rel_pos_h - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.6.attn.rel_pos_w - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.6.attn.relative_position_bias_table - torch.Size([169, 12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.6.attn.sampling_offsets.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.6.attn.sampling_offsets.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.6.attn.sampling_scales.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.6.attn.sampling_scales.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.6.attn.sampling_angles.2.weight - torch.Size([12, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.6.attn.sampling_angles.2.bias - torch.Size([12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.6.attn.qkv.weight - torch.Size([2304, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.6.attn.qkv.bias - torch.Size([2304]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.6.attn.proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.6.attn.proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.6.norm2.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.6.norm2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.6.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.6.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.6.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.6.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.7.norm1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.7.norm1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.7.attn.rel_pos_h - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.7.attn.rel_pos_w - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.7.attn.relative_position_bias_table - torch.Size([169, 12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.7.attn.sampling_offsets.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.7.attn.sampling_offsets.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.7.attn.sampling_scales.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.7.attn.sampling_scales.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.7.attn.sampling_angles.2.weight - torch.Size([12, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.7.attn.sampling_angles.2.bias - torch.Size([12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.7.attn.qkv.weight - torch.Size([2304, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.7.attn.qkv.bias - torch.Size([2304]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.7.attn.proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.7.attn.proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.7.norm2.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.7.norm2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.7.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.7.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.7.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.7.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.8.norm1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.8.norm1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.8.attn.full_attn_rel_pos_h - torch.Size([27, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.8.attn.full_attn_rel_pos_w - torch.Size([27, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.8.attn.qkv.weight - torch.Size([2304, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.8.attn.qkv.bias - torch.Size([2304]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.8.attn.proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.8.attn.proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.8.norm2.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.8.norm2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.8.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.8.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.8.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.8.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.9.norm1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.9.norm1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.9.attn.rel_pos_h - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.9.attn.rel_pos_w - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.9.attn.relative_position_bias_table - torch.Size([169, 12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.9.attn.sampling_offsets.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.9.attn.sampling_offsets.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.9.attn.sampling_scales.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.9.attn.sampling_scales.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.9.attn.sampling_angles.2.weight - torch.Size([12, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.9.attn.sampling_angles.2.bias - torch.Size([12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.9.attn.qkv.weight - torch.Size([2304, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.9.attn.qkv.bias - torch.Size([2304]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.9.attn.proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.9.attn.proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.9.norm2.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.9.norm2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.9.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.9.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.9.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.9.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.10.norm1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.10.norm1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.10.attn.rel_pos_h - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.10.attn.rel_pos_w - torch.Size([13, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.10.attn.relative_position_bias_table - torch.Size([169, 12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.10.attn.sampling_offsets.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.10.attn.sampling_offsets.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.10.attn.sampling_scales.2.weight - torch.Size([24, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.10.attn.sampling_scales.2.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.10.attn.sampling_angles.2.weight - torch.Size([12, 768, 1, 1]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.10.attn.sampling_angles.2.bias - torch.Size([12]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.10.attn.qkv.weight - torch.Size([2304, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.10.attn.qkv.bias - torch.Size([2304]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.10.attn.proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.10.attn.proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.10.norm2.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.10.norm2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.10.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.10.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.10.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.10.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.11.norm1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.11.norm1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.11.attn.full_attn_rel_pos_h - torch.Size([27, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.11.attn.full_attn_rel_pos_w - torch.Size([27, 64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.blocks.11.attn.qkv.weight - torch.Size([2304, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.11.attn.qkv.bias - torch.Size([2304]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.11.attn.proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.11.attn.proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.11.norm2.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.11.norm2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.11.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.11.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.11.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.blocks.11.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.norm.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.norm.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in RVSA_MTP  
+
+backbone.fpn1.0.weight - torch.Size([768, 768, 2, 2]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.fpn1.0.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.fpn1.1.ln.weight - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.fpn1.1.ln.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.fpn1.3.weight - torch.Size([768, 768, 2, 2]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.fpn1.3.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.fpn2.0.weight - torch.Size([768, 768, 2, 2]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+backbone.fpn2.0.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.conv_seg.weight - torch.Size([2, 64, 1, 1]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+decode_head.conv_seg.bias - torch.Size([2]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+decode_head.blocks.0.conv1.0.weight - torch.Size([512, 1536, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.0.conv1.1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.0.conv1.1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.0.conv2.0.weight - torch.Size([512, 512, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.0.conv2.1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.0.conv2.1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.1.conv1.0.weight - torch.Size([256, 1280, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.1.conv1.1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.1.conv1.1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.1.conv2.0.weight - torch.Size([256, 256, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.1.conv2.1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.1.conv2.1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.2.conv1.0.weight - torch.Size([128, 1024, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.2.conv1.1.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.2.conv1.1.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.2.conv2.0.weight - torch.Size([128, 128, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.2.conv2.1.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.2.conv2.1.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.3.conv1.0.weight - torch.Size([64, 128, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.3.conv1.1.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.3.conv1.1.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.3.conv2.0.weight - torch.Size([64, 64, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.3.conv2.1.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.3.conv2.1.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+2024/01/30 21:29:51 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+2024/01/30 21:29:51 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+2024/01/30 21:29:51 - mmengine - INFO - Checkpoints will be saved to /work/share/achk2o1zg1/diwang22/work_dir/multitask_pretrain/finetune/Change_Detection/oscd_rgb/rvsa-b-unet-96-mae_oscd_rgb.
+2024/01/30 21:30:09 - mmengine - INFO - Epoch(train)   [1][10/26]  base_lr: 4.1861e-06 lr: 1.0641e-06  eta: 1:16:17  time: 1.7675  data_time: 0.1345  memory: 4439  loss: 0.6859  decode.loss_ce: 0.6859  decode.acc_seg: 39.4766
+2024/01/30 21:30:20 - mmengine - INFO - Epoch(train)   [1][20/26]  base_lr: 8.8373e-06 lr: 2.2463e-06  eta: 1:01:02  time: 1.4196  data_time: 0.0710  memory: 4439  loss: 0.6794  decode.loss_ce: 0.6794  decode.acc_seg: 39.1465
+2024/01/30 21:30:26 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:30:37 - mmengine - INFO - Epoch(train)   [2][10/26]  base_lr: 1.6279e-05 lr: 4.1379e-06  eta: 0:54:31  time: 1.2760  data_time: 0.0450  memory: 4439  loss: 0.6773  decode.loss_ce: 0.6773  decode.acc_seg: 40.5339
+2024/01/30 21:30:48 - mmengine - INFO - Epoch(train)   [2][20/26]  base_lr: 2.0930e-05 lr: 5.3202e-06  eta: 0:52:19  time: 1.2291  data_time: 0.0362  memory: 4439  loss: 0.6719  decode.loss_ce: 0.6719  decode.acc_seg: 76.8262
+2024/01/30 21:30:54 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:31:05 - mmengine - INFO - Epoch(train)   [3][10/26]  base_lr: 2.8372e-05 lr: 7.2118e-06  eta: 0:50:16  time: 1.0769  data_time: 0.0092  memory: 4439  loss: 0.6557  decode.loss_ce: 0.6557  decode.acc_seg: 98.2989
+2024/01/30 21:31:16 - mmengine - INFO - Epoch(train)   [3][20/26]  base_lr: 3.3023e-05 lr: 8.3941e-06  eta: 0:49:20  time: 1.0756  data_time: 0.0091  memory: 4439  loss: 0.6444  decode.loss_ce: 0.6444  decode.acc_seg: 96.8367
+2024/01/30 21:31:22 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:31:33 - mmengine - INFO - Epoch(train)   [4][10/26]  base_lr: 4.0465e-05 lr: 1.0286e-05  eta: 0:48:17  time: 1.0689  data_time: 0.0090  memory: 4439  loss: 0.6215  decode.loss_ce: 0.6215  decode.acc_seg: 99.4021
+2024/01/30 21:31:44 - mmengine - INFO - Epoch(train)   [4][20/26]  base_lr: 4.5116e-05 lr: 1.1468e-05  eta: 0:47:43  time: 1.0703  data_time: 0.0092  memory: 4439  loss: 0.6074  decode.loss_ce: 0.6074  decode.acc_seg: 97.9719
+2024/01/30 21:31:50 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:32:01 - mmengine - INFO - Epoch(train)   [5][10/26]  base_lr: 5.2558e-05 lr: 1.3360e-05  eta: 0:47:02  time: 1.0720  data_time: 0.0091  memory: 4439  loss: 0.5877  decode.loss_ce: 0.5877  decode.acc_seg: 95.9143
+2024/01/30 21:32:12 - mmengine - INFO - Epoch(train)   [5][20/26]  base_lr: 5.7209e-05 lr: 1.4542e-05  eta: 0:46:37  time: 1.0728  data_time: 0.0092  memory: 4439  loss: 0.5761  decode.loss_ce: 0.5761  decode.acc_seg: 98.2687
+2024/01/30 21:32:18 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:32:29 - mmengine - INFO - Epoch(train)   [6][10/26]  base_lr: 6.0000e-05 lr: 1.5251e-05  eta: 0:46:03  time: 1.0721  data_time: 0.0093  memory: 4439  loss: 0.5564  decode.loss_ce: 0.5564  decode.acc_seg: 98.1261
+2024/01/30 21:32:39 - mmengine - INFO - Epoch(train)   [6][20/26]  base_lr: 6.0000e-05 lr: 1.5251e-05  eta: 0:45:42  time: 1.0722  data_time: 0.0092  memory: 4439  loss: 0.5455  decode.loss_ce: 0.5455  decode.acc_seg: 96.0918
+2024/01/30 21:32:46 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:32:57 - mmengine - INFO - Epoch(train)   [7][10/26]  base_lr: 5.9984e-05 lr: 1.5247e-05  eta: 0:45:13  time: 1.0708  data_time: 0.0089  memory: 4439  loss: 0.5247  decode.loss_ce: 0.5247  decode.acc_seg: 98.6923
+2024/01/30 21:33:07 - mmengine - INFO - Epoch(train)   [7][20/26]  base_lr: 5.9984e-05 lr: 1.5247e-05  eta: 0:44:55  time: 1.0702  data_time: 0.0088  memory: 4439  loss: 0.5128  decode.loss_ce: 0.5128  decode.acc_seg: 96.1946
+2024/01/30 21:33:14 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:33:24 - mmengine - INFO - Epoch(train)   [8][10/26]  base_lr: 5.9934e-05 lr: 1.5235e-05  eta: 0:44:30  time: 1.0704  data_time: 0.0088  memory: 4439  loss: 0.4961  decode.loss_ce: 0.4961  decode.acc_seg: 96.4713
+2024/01/30 21:33:35 - mmengine - INFO - Epoch(train)   [8][20/26]  base_lr: 5.9934e-05 lr: 1.5235e-05  eta: 0:44:14  time: 1.0715  data_time: 0.0088  memory: 4439  loss: 0.4853  decode.loss_ce: 0.4853  decode.acc_seg: 97.7538
+2024/01/30 21:33:42 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:33:52 - mmengine - INFO - Epoch(train)   [9][10/26]  base_lr: 5.9852e-05 lr: 1.5214e-05  eta: 0:43:51  time: 1.0718  data_time: 0.0089  memory: 4439  loss: 0.4712  decode.loss_ce: 0.4712  decode.acc_seg: 97.5031
+2024/01/30 21:34:03 - mmengine - INFO - Epoch(train)   [9][20/26]  base_lr: 5.9852e-05 lr: 1.5214e-05  eta: 0:43:35  time: 1.0709  data_time: 0.0089  memory: 4439  loss: 0.4606  decode.loss_ce: 0.4606  decode.acc_seg: 95.9247
+2024/01/30 21:34:09 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:34:20 - mmengine - INFO - Epoch(train)  [10][10/26]  base_lr: 5.9738e-05 lr: 1.5185e-05  eta: 0:43:13  time: 1.0711  data_time: 0.0084  memory: 4439  loss: 0.4449  decode.loss_ce: 0.4449  decode.acc_seg: 98.5428
+2024/01/30 21:34:31 - mmengine - INFO - Epoch(train)  [10][20/26]  base_lr: 5.9738e-05 lr: 1.5185e-05  eta: 0:42:59  time: 1.0701  data_time: 0.0083  memory: 4439  loss: 0.4344  decode.loss_ce: 0.4344  decode.acc_seg: 98.6099
+2024/01/30 21:34:37 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:34:37 - mmengine - INFO - Saving checkpoint at 10 epochs
+2024/01/30 21:34:51 - mmengine - INFO - Epoch(train)  [11][10/26]  base_lr: 5.9591e-05 lr: 1.5147e-05  eta: 0:42:48  time: 1.0933  data_time: 0.0204  memory: 4439  loss: 0.4190  decode.loss_ce: 0.4190  decode.acc_seg: 97.1891
+2024/01/30 21:35:02 - mmengine - INFO - Epoch(train)  [11][20/26]  base_lr: 5.9591e-05 lr: 1.5147e-05  eta: 0:42:34  time: 1.0955  data_time: 0.0207  memory: 4439  loss: 0.4099  decode.loss_ce: 0.4099  decode.acc_seg: 96.2225
+2024/01/30 21:35:08 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:35:19 - mmengine - INFO - Epoch(train)  [12][10/26]  base_lr: 5.9411e-05 lr: 1.5102e-05  eta: 0:42:13  time: 1.0940  data_time: 0.0214  memory: 4439  loss: 0.3998  decode.loss_ce: 0.3998  decode.acc_seg: 97.7661
+2024/01/30 21:35:30 - mmengine - INFO - Epoch(train)  [12][20/26]  base_lr: 5.9411e-05 lr: 1.5102e-05  eta: 0:41:59  time: 1.0937  data_time: 0.0213  memory: 4439  loss: 0.3914  decode.loss_ce: 0.3914  decode.acc_seg: 98.4380
+2024/01/30 21:35:37 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:35:48 - mmengine - INFO - Epoch(train)  [13][10/26]  base_lr: 5.9200e-05 lr: 1.5048e-05  eta: 0:41:49  time: 1.0993  data_time: 0.0095  memory: 4439  loss: 0.3817  decode.loss_ce: 0.3817  decode.acc_seg: 97.5960
+2024/01/30 21:35:59 - mmengine - INFO - Epoch(train)  [13][20/26]  base_lr: 5.9200e-05 lr: 1.5048e-05  eta: 0:41:35  time: 1.0984  data_time: 0.0093  memory: 4439  loss: 0.3761  decode.loss_ce: 0.3761  decode.acc_seg: 98.3108
+2024/01/30 21:36:05 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:36:16 - mmengine - INFO - Epoch(train)  [14][10/26]  base_lr: 5.8956e-05 lr: 1.4986e-05  eta: 0:41:14  time: 1.0962  data_time: 0.0081  memory: 4439  loss: 0.3608  decode.loss_ce: 0.3608  decode.acc_seg: 98.0908
+2024/01/30 21:36:27 - mmengine - INFO - Epoch(train)  [14][20/26]  base_lr: 5.8956e-05 lr: 1.4986e-05  eta: 0:41:01  time: 1.0950  data_time: 0.0080  memory: 4439  loss: 0.3538  decode.loss_ce: 0.3538  decode.acc_seg: 98.9095
+2024/01/30 21:36:33 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:36:44 - mmengine - INFO - Epoch(train)  [15][10/26]  base_lr: 5.8681e-05 lr: 1.4916e-05  eta: 0:40:40  time: 1.0653  data_time: 0.0076  memory: 4439  loss: 0.3420  decode.loss_ce: 0.3420  decode.acc_seg: 99.3433
+2024/01/30 21:36:54 - mmengine - INFO - Epoch(train)  [15][20/26]  base_lr: 5.8681e-05 lr: 1.4916e-05  eta: 0:40:27  time: 1.0648  data_time: 0.0074  memory: 4439  loss: 0.3334  decode.loss_ce: 0.3334  decode.acc_seg: 98.5525
+2024/01/30 21:37:01 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:37:11 - mmengine - INFO - Epoch(train)  [16][10/26]  base_lr: 5.8375e-05 lr: 1.4838e-05  eta: 0:40:07  time: 1.0658  data_time: 0.0081  memory: 4439  loss: 0.3252  decode.loss_ce: 0.3252  decode.acc_seg: 99.3372
+2024/01/30 21:37:22 - mmengine - INFO - Epoch(train)  [16][20/26]  base_lr: 5.8375e-05 lr: 1.4838e-05  eta: 0:39:55  time: 1.0669  data_time: 0.0084  memory: 4439  loss: 0.3141  decode.loss_ce: 0.3141  decode.acc_seg: 99.6071
+2024/01/30 21:37:28 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:37:39 - mmengine - INFO - Epoch(train)  [17][10/26]  base_lr: 5.8037e-05 lr: 1.4752e-05  eta: 0:39:36  time: 1.0676  data_time: 0.0098  memory: 4439  loss: 0.2989  decode.loss_ce: 0.2989  decode.acc_seg: 99.3788
+2024/01/30 21:37:50 - mmengine - INFO - Epoch(train)  [17][20/26]  base_lr: 5.8037e-05 lr: 1.4752e-05  eta: 0:39:23  time: 1.0689  data_time: 0.0098  memory: 4439  loss: 0.2901  decode.loss_ce: 0.2901  decode.acc_seg: 97.4183
+2024/01/30 21:37:56 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:38:07 - mmengine - INFO - Epoch(train)  [18][10/26]  base_lr: 5.7669e-05 lr: 1.4659e-05  eta: 0:39:05  time: 1.0717  data_time: 0.0099  memory: 4439  loss: 0.2776  decode.loss_ce: 0.2776  decode.acc_seg: 99.5079
+2024/01/30 21:38:18 - mmengine - INFO - Epoch(train)  [18][20/26]  base_lr: 5.7669e-05 lr: 1.4659e-05  eta: 0:38:53  time: 1.0726  data_time: 0.0098  memory: 4439  loss: 0.2751  decode.loss_ce: 0.2751  decode.acc_seg: 99.1148
+2024/01/30 21:38:24 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:38:35 - mmengine - INFO - Epoch(train)  [19][10/26]  base_lr: 5.7270e-05 lr: 1.4557e-05  eta: 0:38:34  time: 1.0731  data_time: 0.0097  memory: 4439  loss: 0.2649  decode.loss_ce: 0.2649  decode.acc_seg: 99.5379
+2024/01/30 21:38:46 - mmengine - INFO - Epoch(train)  [19][20/26]  base_lr: 5.7270e-05 lr: 1.4557e-05  eta: 0:38:22  time: 1.0716  data_time: 0.0095  memory: 4439  loss: 0.2602  decode.loss_ce: 0.2602  decode.acc_seg: 97.1694
+2024/01/30 21:38:52 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:39:03 - mmengine - INFO - Epoch(train)  [20][10/26]  base_lr: 5.6842e-05 lr: 1.4448e-05  eta: 0:38:03  time: 1.0701  data_time: 0.0094  memory: 4439  loss: 0.2472  decode.loss_ce: 0.2472  decode.acc_seg: 99.1255
+2024/01/30 21:39:13 - mmengine - INFO - Epoch(train)  [20][20/26]  base_lr: 5.6842e-05 lr: 1.4448e-05  eta: 0:37:52  time: 1.0705  data_time: 0.0092  memory: 4439  loss: 0.2355  decode.loss_ce: 0.2355  decode.acc_seg: 98.1772
+2024/01/30 21:39:20 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:39:20 - mmengine - INFO - Saving checkpoint at 20 epochs
+2024/01/30 21:39:26 - mmengine - INFO - Epoch(val)  [20][10/49]    eta: 0:00:14  time: 0.3601  data_time: 0.1047  memory: 4439  
+2024/01/30 21:39:27 - mmengine - INFO - Epoch(val)  [20][20/49]    eta: 0:00:07  time: 0.2497  data_time: 0.0745  memory: 2089  
+2024/01/30 21:39:28 - mmengine - INFO - Epoch(val)  [20][30/49]    eta: 0:00:04  time: 0.2126  data_time: 0.0642  memory: 2089  
+2024/01/30 21:39:30 - mmengine - INFO - Epoch(val)  [20][40/49]    eta: 0:00:01  time: 0.1938  data_time: 0.0589  memory: 2089  
+2024/01/30 21:39:31 - mmengine - INFO - per class results:
+2024/01/30 21:39:31 - mmengine - INFO - 
++-----------+--------+-----------+--------+-------+-------+
+|   Class   | Fscore | Precision | Recall |  IoU  |  Acc  |
++-----------+--------+-----------+--------+-------+-------+
+| unchanged | 96.81  |   97.84   | 95.79  | 93.81 | 95.79 |
+|  changed  | 51.93  |   44.79   | 61.76  | 35.07 | 61.76 |
++-----------+--------+-----------+--------+-------+-------+
+2024/01/30 21:39:31 - mmengine - INFO - Epoch(val) [20][49/49]    aAcc: 94.0100  mFscore: 74.3700  mPrecision: 71.3200  mRecall: 78.7800  mIoU: 64.4400  mAcc: 78.7800  data_time: 0.0554  time: 0.1829
+2024/01/30 21:39:34 - mmengine - INFO - The best checkpoint with 64.4400 mIoU at 20 epoch is saved to best_mIoU_epoch_20.pth.
+2024/01/30 21:39:48 - mmengine - INFO - Epoch(train)  [21][10/26]  base_lr: 5.6384e-05 lr: 1.4332e-05  eta: 0:37:36  time: 1.0859  data_time: 0.0174  memory: 4441  loss: 0.2234  decode.loss_ce: 0.2234  decode.acc_seg: 98.3522
+2024/01/30 21:39:58 - mmengine - INFO - Epoch(train)  [21][20/26]  base_lr: 5.6384e-05 lr: 1.4332e-05  eta: 0:37:24  time: 1.0884  data_time: 0.0173  memory: 4441  loss: 0.2119  decode.loss_ce: 0.2119  decode.acc_seg: 99.4801
+2024/01/30 21:40:05 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:40:15 - mmengine - INFO - Epoch(train)  [22][10/26]  base_lr: 5.5898e-05 lr: 1.4208e-05  eta: 0:37:06  time: 1.0880  data_time: 0.0177  memory: 4441  loss: 0.1964  decode.loss_ce: 0.1964  decode.acc_seg: 98.9198
+2024/01/30 21:40:26 - mmengine - INFO - Epoch(train)  [22][20/26]  base_lr: 5.5898e-05 lr: 1.4208e-05  eta: 0:36:54  time: 1.0864  data_time: 0.0176  memory: 4441  loss: 0.1841  decode.loss_ce: 0.1841  decode.acc_seg: 97.3064
+2024/01/30 21:40:32 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:40:43 - mmengine - INFO - Epoch(train)  [23][10/26]  base_lr: 5.5383e-05 lr: 1.4078e-05  eta: 0:36:36  time: 1.0689  data_time: 0.0094  memory: 4441  loss: 0.1584  decode.loss_ce: 0.1584  decode.acc_seg: 96.8140
+2024/01/30 21:40:54 - mmengine - INFO - Epoch(train)  [23][20/26]  base_lr: 5.5383e-05 lr: 1.4078e-05  eta: 0:36:24  time: 1.0668  data_time: 0.0093  memory: 4441  loss: 0.1438  decode.loss_ce: 0.1438  decode.acc_seg: 98.0332
+2024/01/30 21:41:00 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:41:11 - mmengine - INFO - Epoch(train)  [24][10/26]  base_lr: 5.4840e-05 lr: 1.3940e-05  eta: 0:36:06  time: 1.0660  data_time: 0.0089  memory: 4441  loss: 0.1239  decode.loss_ce: 0.1239  decode.acc_seg: 98.5115
+2024/01/30 21:41:21 - mmengine - INFO - Epoch(train)  [24][20/26]  base_lr: 5.4840e-05 lr: 1.3940e-05  eta: 0:35:54  time: 1.0659  data_time: 0.0088  memory: 4441  loss: 0.1105  decode.loss_ce: 0.1105  decode.acc_seg: 98.0241
+2024/01/30 21:41:28 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:41:39 - mmengine - INFO - Epoch(train)  [25][10/26]  base_lr: 5.4271e-05 lr: 1.3795e-05  eta: 0:35:36  time: 1.0673  data_time: 0.0088  memory: 4441  loss: 0.1016  decode.loss_ce: 0.1016  decode.acc_seg: 99.1945
+2024/01/30 21:41:49 - mmengine - INFO - Epoch(train)  [25][20/26]  base_lr: 5.4271e-05 lr: 1.3795e-05  eta: 0:35:24  time: 1.0689  data_time: 0.0091  memory: 4441  loss: 0.0994  decode.loss_ce: 0.0994  decode.acc_seg: 99.5741
+2024/01/30 21:41:56 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:42:06 - mmengine - INFO - Epoch(train)  [26][10/26]  base_lr: 5.3674e-05 lr: 1.3643e-05  eta: 0:35:06  time: 1.0691  data_time: 0.0097  memory: 4441  loss: 0.0945  decode.loss_ce: 0.0945  decode.acc_seg: 99.0823
+2024/01/30 21:42:17 - mmengine - INFO - Epoch(train)  [26][20/26]  base_lr: 5.3674e-05 lr: 1.3643e-05  eta: 0:34:54  time: 1.0687  data_time: 0.0096  memory: 4441  loss: 0.0908  decode.loss_ce: 0.0908  decode.acc_seg: 98.9665
+2024/01/30 21:42:23 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:42:37 - mmengine - INFO - Epoch(train)  [27][10/26]  base_lr: 5.3052e-05 lr: 1.3485e-05  eta: 0:34:46  time: 1.1346  data_time: 0.0088  memory: 4441  loss: 0.0911  decode.loss_ce: 0.0911  decode.acc_seg: 99.4882
+2024/01/30 21:42:49 - mmengine - INFO - Epoch(train)  [27][20/26]  base_lr: 5.3052e-05 lr: 1.3485e-05  eta: 0:34:35  time: 1.1427  data_time: 0.0085  memory: 4441  loss: 0.0933  decode.loss_ce: 0.0933  decode.acc_seg: 97.9073
+2024/01/30 21:42:55 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:43:06 - mmengine - INFO - Epoch(train)  [28][10/26]  base_lr: 5.2405e-05 lr: 1.3321e-05  eta: 0:34:17  time: 1.1441  data_time: 0.0082  memory: 4441  loss: 0.0905  decode.loss_ce: 0.0905  decode.acc_seg: 98.6047
+2024/01/30 21:43:16 - mmengine - INFO - Epoch(train)  [28][20/26]  base_lr: 5.2405e-05 lr: 1.3321e-05  eta: 0:34:06  time: 1.1455  data_time: 0.0083  memory: 4441  loss: 0.0913  decode.loss_ce: 0.0913  decode.acc_seg: 98.9041
+2024/01/30 21:43:23 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:43:34 - mmengine - INFO - Epoch(train)  [29][10/26]  base_lr: 5.1733e-05 lr: 1.3150e-05  eta: 0:33:48  time: 1.0799  data_time: 0.0094  memory: 4441  loss: 0.0903  decode.loss_ce: 0.0903  decode.acc_seg: 98.7062
+2024/01/30 21:43:44 - mmengine - INFO - Epoch(train)  [29][20/26]  base_lr: 5.1733e-05 lr: 1.3150e-05  eta: 0:33:36  time: 1.0712  data_time: 0.0095  memory: 4441  loss: 0.0854  decode.loss_ce: 0.0854  decode.acc_seg: 96.7431
+2024/01/30 21:43:51 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:44:02 - mmengine - INFO - Epoch(train)  [30][10/26]  base_lr: 5.1037e-05 lr: 1.2973e-05  eta: 0:33:18  time: 1.0715  data_time: 0.0097  memory: 4441  loss: 0.0854  decode.loss_ce: 0.0854  decode.acc_seg: 99.9425
+2024/01/30 21:44:12 - mmengine - INFO - Epoch(train)  [30][20/26]  base_lr: 5.1037e-05 lr: 1.2973e-05  eta: 0:33:07  time: 1.0703  data_time: 0.0096  memory: 4441  loss: 0.0882  decode.loss_ce: 0.0882  decode.acc_seg: 95.8757
+2024/01/30 21:44:18 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:44:18 - mmengine - INFO - Saving checkpoint at 30 epochs
+2024/01/30 21:44:32 - mmengine - INFO - Epoch(train)  [31][10/26]  base_lr: 5.0318e-05 lr: 1.2790e-05  eta: 0:32:50  time: 1.0823  data_time: 0.0174  memory: 4441  loss: 0.0840  decode.loss_ce: 0.0840  decode.acc_seg: 98.4961
+2024/01/30 21:44:43 - mmengine - INFO - Epoch(train)  [31][20/26]  base_lr: 5.0318e-05 lr: 1.2790e-05  eta: 0:32:39  time: 1.0822  data_time: 0.0177  memory: 4441  loss: 0.0839  decode.loss_ce: 0.0839  decode.acc_seg: 98.2996
+2024/01/30 21:44:49 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:45:00 - mmengine - INFO - Epoch(train)  [32][10/26]  base_lr: 4.9578e-05 lr: 1.2602e-05  eta: 0:32:21  time: 1.0799  data_time: 0.0181  memory: 4441  loss: 0.0777  decode.loss_ce: 0.0777  decode.acc_seg: 99.7055
+2024/01/30 21:45:11 - mmengine - INFO - Epoch(train)  [32][20/26]  base_lr: 4.9578e-05 lr: 1.2602e-05  eta: 0:32:09  time: 1.0813  data_time: 0.0179  memory: 4441  loss: 0.0709  decode.loss_ce: 0.0709  decode.acc_seg: 97.8762
+2024/01/30 21:45:17 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:45:28 - mmengine - INFO - Epoch(train)  [33][10/26]  base_lr: 4.8815e-05 lr: 1.2408e-05  eta: 0:31:51  time: 1.0678  data_time: 0.0088  memory: 4441  loss: 0.0675  decode.loss_ce: 0.0675  decode.acc_seg: 100.0000
+2024/01/30 21:45:38 - mmengine - INFO - Epoch(train)  [33][20/26]  base_lr: 4.8815e-05 lr: 1.2408e-05  eta: 0:31:40  time: 1.0666  data_time: 0.0088  memory: 4441  loss: 0.0658  decode.loss_ce: 0.0658  decode.acc_seg: 99.4743
+2024/01/30 21:45:45 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:45:56 - mmengine - INFO - Epoch(train)  [34][10/26]  base_lr: 4.8032e-05 lr: 1.2209e-05  eta: 0:31:22  time: 1.0673  data_time: 0.0089  memory: 4441  loss: 0.0662  decode.loss_ce: 0.0662  decode.acc_seg: 98.5044
+2024/01/30 21:46:06 - mmengine - INFO - Epoch(train)  [34][20/26]  base_lr: 4.8032e-05 lr: 1.2209e-05  eta: 0:31:10  time: 1.0666  data_time: 0.0089  memory: 4441  loss: 0.0654  decode.loss_ce: 0.0654  decode.acc_seg: 99.7159
+2024/01/30 21:46:13 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:46:23 - mmengine - INFO - Epoch(train)  [35][10/26]  base_lr: 4.7230e-05 lr: 1.2005e-05  eta: 0:30:53  time: 1.0671  data_time: 0.0097  memory: 4441  loss: 0.0635  decode.loss_ce: 0.0635  decode.acc_seg: 99.0518
+2024/01/30 21:46:34 - mmengine - INFO - Epoch(train)  [35][20/26]  base_lr: 4.7230e-05 lr: 1.2005e-05  eta: 0:30:41  time: 1.0683  data_time: 0.0096  memory: 4441  loss: 0.0662  decode.loss_ce: 0.0662  decode.acc_seg: 99.2863
+2024/01/30 21:46:40 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:46:51 - mmengine - INFO - Epoch(train)  [36][10/26]  base_lr: 4.6408e-05 lr: 1.1796e-05  eta: 0:30:24  time: 1.0701  data_time: 0.0092  memory: 4441  loss: 0.0680  decode.loss_ce: 0.0680  decode.acc_seg: 98.0164
+2024/01/30 21:47:02 - mmengine - INFO - Epoch(train)  [36][20/26]  base_lr: 4.6408e-05 lr: 1.1796e-05  eta: 0:30:12  time: 1.0711  data_time: 0.0093  memory: 4441  loss: 0.0709  decode.loss_ce: 0.0709  decode.acc_seg: 99.2177
+2024/01/30 21:47:08 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:47:19 - mmengine - INFO - Epoch(train)  [37][10/26]  base_lr: 4.5569e-05 lr: 1.1583e-05  eta: 0:29:55  time: 1.0699  data_time: 0.0090  memory: 4441  loss: 0.0707  decode.loss_ce: 0.0707  decode.acc_seg: 97.2829
+2024/01/30 21:47:30 - mmengine - INFO - Epoch(train)  [37][20/26]  base_lr: 4.5569e-05 lr: 1.1583e-05  eta: 0:29:43  time: 1.0703  data_time: 0.0089  memory: 4441  loss: 0.0676  decode.loss_ce: 0.0676  decode.acc_seg: 99.4774
+2024/01/30 21:47:36 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:47:47 - mmengine - INFO - Epoch(train)  [38][10/26]  base_lr: 4.4713e-05 lr: 1.1365e-05  eta: 0:29:26  time: 1.0706  data_time: 0.0081  memory: 4441  loss: 0.0643  decode.loss_ce: 0.0643  decode.acc_seg: 99.0341
+2024/01/30 21:47:58 - mmengine - INFO - Epoch(train)  [38][20/26]  base_lr: 4.4713e-05 lr: 1.1365e-05  eta: 0:29:15  time: 1.0706  data_time: 0.0081  memory: 4441  loss: 0.0632  decode.loss_ce: 0.0632  decode.acc_seg: 99.4954
+2024/01/30 21:48:04 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:48:15 - mmengine - INFO - Epoch(train)  [39][10/26]  base_lr: 4.3840e-05 lr: 1.1144e-05  eta: 0:28:57  time: 1.0725  data_time: 0.0083  memory: 4441  loss: 0.0612  decode.loss_ce: 0.0612  decode.acc_seg: 98.7759
+2024/01/30 21:48:17 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:48:25 - mmengine - INFO - Epoch(train)  [39][20/26]  base_lr: 4.3840e-05 lr: 1.1144e-05  eta: 0:28:46  time: 1.0729  data_time: 0.0086  memory: 4441  loss: 0.0633  decode.loss_ce: 0.0633  decode.acc_seg: 97.9544
+2024/01/30 21:48:32 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:48:43 - mmengine - INFO - Epoch(train)  [40][10/26]  base_lr: 4.2953e-05 lr: 1.0918e-05  eta: 0:28:28  time: 1.0701  data_time: 0.0093  memory: 4441  loss: 0.0643  decode.loss_ce: 0.0643  decode.acc_seg: 97.8239
+2024/01/30 21:48:53 - mmengine - INFO - Epoch(train)  [40][20/26]  base_lr: 4.2953e-05 lr: 1.0918e-05  eta: 0:28:17  time: 1.0693  data_time: 0.0091  memory: 4441  loss: 0.0632  decode.loss_ce: 0.0632  decode.acc_seg: 99.8169
+2024/01/30 21:48:59 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:48:59 - mmengine - INFO - Saving checkpoint at 40 epochs
+2024/01/30 21:49:03 - mmengine - INFO - Epoch(val)  [40][10/49]    eta: 0:00:07  time: 0.1492  data_time: 0.0553  memory: 4441  
+2024/01/30 21:49:05 - mmengine - INFO - Epoch(val)  [40][20/49]    eta: 0:00:04  time: 0.1479  data_time: 0.0551  memory: 2088  
+2024/01/30 21:49:06 - mmengine - INFO - Epoch(val)  [40][30/49]    eta: 0:00:02  time: 0.1469  data_time: 0.0551  memory: 2088  
+2024/01/30 21:49:08 - mmengine - INFO - Epoch(val)  [40][40/49]    eta: 0:00:01  time: 0.1461  data_time: 0.0551  memory: 2088  
+2024/01/30 21:49:09 - mmengine - INFO - per class results:
+2024/01/30 21:49:09 - mmengine - INFO - 
++-----------+--------+-----------+--------+-------+-------+
+|   Class   | Fscore | Precision | Recall |  IoU  |  Acc  |
++-----------+--------+-----------+--------+-------+-------+
+| unchanged | 97.42  |   96.78   | 98.06  | 94.96 | 98.06 |
+|  changed  | 46.51  |   53.88   | 40.92  |  30.3 | 40.92 |
++-----------+--------+-----------+--------+-------+-------+
+2024/01/30 21:49:09 - mmengine - INFO - Epoch(val) [40][49/49]    aAcc: 95.0700  mFscore: 71.9600  mPrecision: 75.3300  mRecall: 69.4900  mIoU: 62.6300  mAcc: 69.4900  data_time: 0.0552  time: 0.1455
+2024/01/30 21:49:20 - mmengine - INFO - Epoch(train)  [41][10/26]  base_lr: 4.2051e-05 lr: 1.0689e-05  eta: 0:28:00  time: 1.0720  data_time: 0.0117  memory: 4441  loss: 0.0684  decode.loss_ce: 0.0684  decode.acc_seg: 97.3253
+2024/01/30 21:49:31 - mmengine - INFO - Epoch(train)  [41][20/26]  base_lr: 4.2051e-05 lr: 1.0689e-05  eta: 0:27:49  time: 1.0726  data_time: 0.0115  memory: 4441  loss: 0.0634  decode.loss_ce: 0.0634  decode.acc_seg: 98.8060
+2024/01/30 21:49:37 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:49:48 - mmengine - INFO - Epoch(train)  [42][10/26]  base_lr: 4.1136e-05 lr: 1.0456e-05  eta: 0:27:31  time: 1.0743  data_time: 0.0118  memory: 4441  loss: 0.0614  decode.loss_ce: 0.0614  decode.acc_seg: 98.2646
+2024/01/30 21:49:59 - mmengine - INFO - Epoch(train)  [42][20/26]  base_lr: 4.1136e-05 lr: 1.0456e-05  eta: 0:27:20  time: 1.0782  data_time: 0.0121  memory: 4441  loss: 0.0618  decode.loss_ce: 0.0618  decode.acc_seg: 97.2992
+2024/01/30 21:50:05 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:50:16 - mmengine - INFO - Epoch(train)  [43][10/26]  base_lr: 4.0209e-05 lr: 1.0221e-05  eta: 0:27:03  time: 1.0720  data_time: 0.0101  memory: 4441  loss: 0.0580  decode.loss_ce: 0.0580  decode.acc_seg: 96.6301
+2024/01/30 21:50:26 - mmengine - INFO - Epoch(train)  [43][20/26]  base_lr: 4.0209e-05 lr: 1.0221e-05  eta: 0:26:51  time: 1.0698  data_time: 0.0098  memory: 4441  loss: 0.0633  decode.loss_ce: 0.0633  decode.acc_seg: 99.5485
+2024/01/30 21:50:33 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:50:43 - mmengine - INFO - Epoch(train)  [44][10/26]  base_lr: 3.9271e-05 lr: 9.9820e-06  eta: 0:26:34  time: 1.0673  data_time: 0.0095  memory: 4441  loss: 0.0643  decode.loss_ce: 0.0643  decode.acc_seg: 98.2914
+2024/01/30 21:50:54 - mmengine - INFO - Epoch(train)  [44][20/26]  base_lr: 3.9271e-05 lr: 9.9820e-06  eta: 0:26:23  time: 1.0650  data_time: 0.0093  memory: 4441  loss: 0.0631  decode.loss_ce: 0.0631  decode.acc_seg: 97.6377
+2024/01/30 21:51:00 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:51:11 - mmengine - INFO - Epoch(train)  [45][10/26]  base_lr: 3.8322e-05 lr: 9.7410e-06  eta: 0:26:05  time: 1.0654  data_time: 0.0087  memory: 4441  loss: 0.0608  decode.loss_ce: 0.0608  decode.acc_seg: 99.1818
+2024/01/30 21:51:22 - mmengine - INFO - Epoch(train)  [45][20/26]  base_lr: 3.8322e-05 lr: 9.7410e-06  eta: 0:25:54  time: 1.0659  data_time: 0.0086  memory: 4441  loss: 0.0585  decode.loss_ce: 0.0585  decode.acc_seg: 99.3414
+2024/01/30 21:51:28 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:51:39 - mmengine - INFO - Epoch(train)  [46][10/26]  base_lr: 3.7365e-05 lr: 9.4976e-06  eta: 0:25:36  time: 1.0676  data_time: 0.0090  memory: 4441  loss: 0.0571  decode.loss_ce: 0.0571  decode.acc_seg: 98.8855
+2024/01/30 21:51:49 - mmengine - INFO - Epoch(train)  [46][20/26]  base_lr: 3.7365e-05 lr: 9.4976e-06  eta: 0:25:25  time: 1.0675  data_time: 0.0091  memory: 4441  loss: 0.0593  decode.loss_ce: 0.0593  decode.acc_seg: 96.9010
+2024/01/30 21:51:56 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:52:07 - mmengine - INFO - Epoch(train)  [47][10/26]  base_lr: 3.6399e-05 lr: 9.2521e-06  eta: 0:25:08  time: 1.0697  data_time: 0.0096  memory: 4441  loss: 0.0603  decode.loss_ce: 0.0603  decode.acc_seg: 99.9972
+2024/01/30 21:52:17 - mmengine - INFO - Epoch(train)  [47][20/26]  base_lr: 3.6399e-05 lr: 9.2521e-06  eta: 0:24:57  time: 1.0719  data_time: 0.0098  memory: 4441  loss: 0.0600  decode.loss_ce: 0.0600  decode.acc_seg: 98.2445
+2024/01/30 21:52:24 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:52:35 - mmengine - INFO - Epoch(train)  [48][10/26]  base_lr: 3.5426e-05 lr: 9.0049e-06  eta: 0:24:39  time: 1.0724  data_time: 0.0095  memory: 4441  loss: 0.0603  decode.loss_ce: 0.0603  decode.acc_seg: 98.2372
+2024/01/30 21:52:50 - mmengine - INFO - Epoch(train)  [48][20/26]  base_lr: 3.5426e-05 lr: 9.0049e-06  eta: 0:24:33  time: 1.1619  data_time: 0.0095  memory: 4441  loss: 0.0591  decode.loss_ce: 0.0591  decode.acc_seg: 99.0991
+2024/01/30 21:52:56 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:53:07 - mmengine - INFO - Epoch(train)  [49][10/26]  base_lr: 3.4448e-05 lr: 8.7562e-06  eta: 0:24:16  time: 1.1694  data_time: 0.0139  memory: 4441  loss: 0.0553  decode.loss_ce: 0.0553  decode.acc_seg: 98.1735
+2024/01/30 21:53:18 - mmengine - INFO - Epoch(train)  [49][20/26]  base_lr: 3.4448e-05 lr: 8.7562e-06  eta: 0:24:05  time: 1.1694  data_time: 0.0141  memory: 4441  loss: 0.0553  decode.loss_ce: 0.0553  decode.acc_seg: 99.0262
+2024/01/30 21:53:24 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:53:35 - mmengine - INFO - Epoch(train)  [50][10/26]  base_lr: 3.3465e-05 lr: 8.5062e-06  eta: 0:23:48  time: 1.0793  data_time: 0.0150  memory: 4441  loss: 0.0546  decode.loss_ce: 0.0546  decode.acc_seg: 99.0730
+2024/01/30 21:53:46 - mmengine - INFO - Epoch(train)  [50][20/26]  base_lr: 3.3465e-05 lr: 8.5062e-06  eta: 0:23:37  time: 1.0792  data_time: 0.0148  memory: 4441  loss: 0.0535  decode.loss_ce: 0.0535  decode.acc_seg: 99.4362
+2024/01/30 21:53:52 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:53:52 - mmengine - INFO - Saving checkpoint at 50 epochs
+2024/01/30 21:54:06 - mmengine - INFO - Epoch(train)  [51][10/26]  base_lr: 3.2477e-05 lr: 8.2553e-06  eta: 0:23:20  time: 1.0839  data_time: 0.0204  memory: 4441  loss: 0.0560  decode.loss_ce: 0.0560  decode.acc_seg: 99.4099
+2024/01/30 21:54:17 - mmengine - INFO - Epoch(train)  [51][20/26]  base_lr: 3.2477e-05 lr: 8.2553e-06  eta: 0:23:09  time: 1.0832  data_time: 0.0202  memory: 4441  loss: 0.0564  decode.loss_ce: 0.0564  decode.acc_seg: 99.0229
+2024/01/30 21:54:23 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:54:34 - mmengine - INFO - Epoch(train)  [52][10/26]  base_lr: 3.1488e-05 lr: 8.0037e-06  eta: 0:22:51  time: 1.0819  data_time: 0.0194  memory: 4441  loss: 0.0545  decode.loss_ce: 0.0545  decode.acc_seg: 96.3911
+2024/01/30 21:54:44 - mmengine - INFO - Epoch(train)  [52][20/26]  base_lr: 3.1488e-05 lr: 8.0037e-06  eta: 0:22:40  time: 1.0805  data_time: 0.0192  memory: 4441  loss: 0.0557  decode.loss_ce: 0.0557  decode.acc_seg: 95.7588
+2024/01/30 21:54:51 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:55:01 - mmengine - INFO - Epoch(train)  [53][10/26]  base_lr: 3.0496e-05 lr: 7.7517e-06  eta: 0:22:22  time: 1.0645  data_time: 0.0089  memory: 4441  loss: 0.0530  decode.loss_ce: 0.0530  decode.acc_seg: 98.8421
+2024/01/30 21:55:12 - mmengine - INFO - Epoch(train)  [53][20/26]  base_lr: 3.0496e-05 lr: 7.7517e-06  eta: 0:22:11  time: 1.0639  data_time: 0.0087  memory: 4441  loss: 0.0522  decode.loss_ce: 0.0522  decode.acc_seg: 98.8011
+2024/01/30 21:55:18 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:55:29 - mmengine - INFO - Epoch(train)  [54][10/26]  base_lr: 2.9504e-05 lr: 7.4995e-06  eta: 0:21:54  time: 1.0642  data_time: 0.0086  memory: 4441  loss: 0.0498  decode.loss_ce: 0.0498  decode.acc_seg: 99.0560
+2024/01/30 21:55:40 - mmengine - INFO - Epoch(train)  [54][20/26]  base_lr: 2.9504e-05 lr: 7.4995e-06  eta: 0:21:43  time: 1.0641  data_time: 0.0087  memory: 4441  loss: 0.0476  decode.loss_ce: 0.0476  decode.acc_seg: 98.3449
+2024/01/30 21:55:46 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:55:57 - mmengine - INFO - Epoch(train)  [55][10/26]  base_lr: 2.8512e-05 lr: 7.2475e-06  eta: 0:21:25  time: 1.0637  data_time: 0.0080  memory: 4441  loss: 0.0475  decode.loss_ce: 0.0475  decode.acc_seg: 99.7117
+2024/01/30 21:56:07 - mmengine - INFO - Epoch(train)  [55][20/26]  base_lr: 2.8512e-05 lr: 7.2475e-06  eta: 0:21:14  time: 1.0635  data_time: 0.0078  memory: 4441  loss: 0.0447  decode.loss_ce: 0.0447  decode.acc_seg: 99.6568
+2024/01/30 21:56:14 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:56:24 - mmengine - INFO - Epoch(train)  [56][10/26]  base_lr: 2.7523e-05 lr: 6.9959e-06  eta: 0:20:56  time: 1.0654  data_time: 0.0084  memory: 4441  loss: 0.0484  decode.loss_ce: 0.0484  decode.acc_seg: 98.4405
+2024/01/30 21:56:35 - mmengine - INFO - Epoch(train)  [56][20/26]  base_lr: 2.7523e-05 lr: 6.9959e-06  eta: 0:20:45  time: 1.0677  data_time: 0.0083  memory: 4441  loss: 0.0485  decode.loss_ce: 0.0485  decode.acc_seg: 96.8345
+2024/01/30 21:56:41 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:56:52 - mmengine - INFO - Epoch(train)  [57][10/26]  base_lr: 2.6535e-05 lr: 6.7450e-06  eta: 0:20:28  time: 1.0688  data_time: 0.0092  memory: 4441  loss: 0.0500  decode.loss_ce: 0.0500  decode.acc_seg: 97.9480
+2024/01/30 21:57:03 - mmengine - INFO - Epoch(train)  [57][20/26]  base_lr: 2.6535e-05 lr: 6.7450e-06  eta: 0:20:17  time: 1.0698  data_time: 0.0093  memory: 4441  loss: 0.0542  decode.loss_ce: 0.0542  decode.acc_seg: 98.5480
+2024/01/30 21:57:09 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:57:20 - mmengine - INFO - Epoch(train)  [58][10/26]  base_lr: 2.5552e-05 lr: 6.4950e-06  eta: 0:20:00  time: 1.0713  data_time: 0.0092  memory: 4441  loss: 0.0526  decode.loss_ce: 0.0526  decode.acc_seg: 98.7657
+2024/01/30 21:57:31 - mmengine - INFO - Epoch(train)  [58][20/26]  base_lr: 2.5552e-05 lr: 6.4950e-06  eta: 0:19:49  time: 1.0718  data_time: 0.0092  memory: 4441  loss: 0.0502  decode.loss_ce: 0.0502  decode.acc_seg: 99.6870
+2024/01/30 21:57:37 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:57:48 - mmengine - INFO - Epoch(train)  [59][10/26]  base_lr: 2.4574e-05 lr: 6.2463e-06  eta: 0:19:31  time: 1.0721  data_time: 0.0096  memory: 4441  loss: 0.0497  decode.loss_ce: 0.0497  decode.acc_seg: 99.6681
+2024/01/30 21:57:59 - mmengine - INFO - Epoch(train)  [59][20/26]  base_lr: 2.4574e-05 lr: 6.2463e-06  eta: 0:19:20  time: 1.0718  data_time: 0.0092  memory: 4441  loss: 0.0468  decode.loss_ce: 0.0468  decode.acc_seg: 98.2716
+2024/01/30 21:58:05 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:58:16 - mmengine - INFO - Epoch(train)  [60][10/26]  base_lr: 2.3601e-05 lr: 5.9991e-06  eta: 0:19:03  time: 1.0709  data_time: 0.0104  memory: 4441  loss: 0.0462  decode.loss_ce: 0.0462  decode.acc_seg: 99.1351
+2024/01/30 21:58:27 - mmengine - INFO - Epoch(train)  [60][20/26]  base_lr: 2.3601e-05 lr: 5.9991e-06  eta: 0:18:52  time: 1.0710  data_time: 0.0103  memory: 4441  loss: 0.0474  decode.loss_ce: 0.0474  decode.acc_seg: 98.1844
+2024/01/30 21:58:33 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:58:33 - mmengine - INFO - Saving checkpoint at 60 epochs
+2024/01/30 21:58:40 - mmengine - INFO - Epoch(val)  [60][10/49]    eta: 0:00:08  time: 0.1512  data_time: 0.0588  memory: 4441  
+2024/01/30 21:58:41 - mmengine - INFO - Epoch(val)  [60][20/49]    eta: 0:00:05  time: 0.1514  data_time: 0.0587  memory: 2088  
+2024/01/30 21:58:43 - mmengine - INFO - Epoch(val)  [60][30/49]    eta: 0:00:03  time: 0.1515  data_time: 0.0587  memory: 2088  
+2024/01/30 21:58:44 - mmengine - INFO - Epoch(val)  [60][40/49]    eta: 0:00:01  time: 0.1518  data_time: 0.0589  memory: 2088  
+2024/01/30 21:58:45 - mmengine - INFO - per class results:
+2024/01/30 21:58:45 - mmengine - INFO - 
++-----------+--------+-----------+--------+-------+-------+
+|   Class   | Fscore | Precision | Recall |  IoU  |  Acc  |
++-----------+--------+-----------+--------+-------+-------+
+| unchanged | 97.38  |   97.17   | 97.58  | 94.89 | 97.58 |
+|  changed  | 50.56  |   52.66   | 48.62  | 33.83 | 48.62 |
++-----------+--------+-----------+--------+-------+-------+
+2024/01/30 21:58:45 - mmengine - INFO - Epoch(val) [60][49/49]    aAcc: 95.0200  mFscore: 73.9700  mPrecision: 74.9200  mRecall: 73.1000  mIoU: 64.3600  mAcc: 73.1000  data_time: 0.0595  time: 0.1524
+2024/01/30 21:58:56 - mmengine - INFO - Epoch(train)  [61][10/26]  base_lr: 2.2635e-05 lr: 5.7536e-06  eta: 0:18:35  time: 1.0744  data_time: 0.0119  memory: 4441  loss: 0.0444  decode.loss_ce: 0.0444  decode.acc_seg: 99.3449
+2024/01/30 21:59:07 - mmengine - INFO - Epoch(train)  [61][20/26]  base_lr: 2.2635e-05 lr: 5.7536e-06  eta: 0:18:24  time: 1.0752  data_time: 0.0120  memory: 4441  loss: 0.0450  decode.loss_ce: 0.0450  decode.acc_seg: 99.5890
+2024/01/30 21:59:13 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:59:24 - mmengine - INFO - Epoch(train)  [62][10/26]  base_lr: 2.1678e-05 lr: 5.5102e-06  eta: 0:18:06  time: 1.0746  data_time: 0.0109  memory: 4441  loss: 0.0483  decode.loss_ce: 0.0483  decode.acc_seg: 98.2612
+2024/01/30 21:59:35 - mmengine - INFO - Epoch(train)  [62][20/26]  base_lr: 2.1678e-05 lr: 5.5102e-06  eta: 0:17:55  time: 1.0732  data_time: 0.0107  memory: 4441  loss: 0.0496  decode.loss_ce: 0.0496  decode.acc_seg: 97.9456
+2024/01/30 21:59:41 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 21:59:52 - mmengine - INFO - Epoch(train)  [63][10/26]  base_lr: 2.0729e-05 lr: 5.2692e-06  eta: 0:17:38  time: 1.0670  data_time: 0.0087  memory: 4441  loss: 0.0464  decode.loss_ce: 0.0464  decode.acc_seg: 99.5034
+2024/01/30 22:00:02 - mmengine - INFO - Epoch(train)  [63][20/26]  base_lr: 2.0729e-05 lr: 5.2692e-06  eta: 0:17:27  time: 1.0656  data_time: 0.0085  memory: 4441  loss: 0.0451  decode.loss_ce: 0.0451  decode.acc_seg: 98.1659
+2024/01/30 22:00:09 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:00:19 - mmengine - INFO - Epoch(train)  [64][10/26]  base_lr: 1.9791e-05 lr: 5.0307e-06  eta: 0:17:09  time: 1.0641  data_time: 0.0078  memory: 4441  loss: 0.0468  decode.loss_ce: 0.0468  decode.acc_seg: 99.7130
+2024/01/30 22:00:30 - mmengine - INFO - Epoch(train)  [64][20/26]  base_lr: 1.9791e-05 lr: 5.0307e-06  eta: 0:16:58  time: 1.0639  data_time: 0.0079  memory: 4441  loss: 0.0433  decode.loss_ce: 0.0433  decode.acc_seg: 98.1614
+2024/01/30 22:00:36 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:00:47 - mmengine - INFO - Epoch(train)  [65][10/26]  base_lr: 1.8864e-05 lr: 4.7950e-06  eta: 0:16:41  time: 1.0642  data_time: 0.0086  memory: 4441  loss: 0.0439  decode.loss_ce: 0.0439  decode.acc_seg: 99.8132
+2024/01/30 22:00:58 - mmengine - INFO - Epoch(train)  [65][20/26]  base_lr: 1.8864e-05 lr: 4.7950e-06  eta: 0:16:30  time: 1.0638  data_time: 0.0085  memory: 4441  loss: 0.0449  decode.loss_ce: 0.0449  decode.acc_seg: 98.5139
+2024/01/30 22:01:04 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:01:15 - mmengine - INFO - Epoch(train)  [66][10/26]  base_lr: 1.7949e-05 lr: 4.5624e-06  eta: 0:16:13  time: 1.0632  data_time: 0.0091  memory: 4441  loss: 0.0411  decode.loss_ce: 0.0411  decode.acc_seg: 99.2006
+2024/01/30 22:01:26 - mmengine - INFO - Epoch(train)  [66][20/26]  base_lr: 1.7949e-05 lr: 4.5624e-06  eta: 0:16:02  time: 1.0691  data_time: 0.0092  memory: 4441  loss: 0.0435  decode.loss_ce: 0.0435  decode.acc_seg: 99.0331
+2024/01/30 22:01:32 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:01:43 - mmengine - INFO - Epoch(train)  [67][10/26]  base_lr: 1.7047e-05 lr: 4.3332e-06  eta: 0:15:45  time: 1.0723  data_time: 0.0082  memory: 4441  loss: 0.0464  decode.loss_ce: 0.0464  decode.acc_seg: 99.9397
+2024/01/30 22:01:53 - mmengine - INFO - Epoch(train)  [67][20/26]  base_lr: 1.7047e-05 lr: 4.3332e-06  eta: 0:15:34  time: 1.0736  data_time: 0.0084  memory: 4441  loss: 0.0442  decode.loss_ce: 0.0442  decode.acc_seg: 99.2611
+2024/01/30 22:02:00 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:02:11 - mmengine - INFO - Epoch(train)  [68][10/26]  base_lr: 1.6160e-05 lr: 4.1076e-06  eta: 0:15:16  time: 1.0750  data_time: 0.0086  memory: 4441  loss: 0.0444  decode.loss_ce: 0.0444  decode.acc_seg: 98.2324
+2024/01/30 22:02:21 - mmengine - INFO - Epoch(train)  [68][20/26]  base_lr: 1.6160e-05 lr: 4.1076e-06  eta: 0:15:05  time: 1.0719  data_time: 0.0088  memory: 4441  loss: 0.0409  decode.loss_ce: 0.0409  decode.acc_seg: 99.5546
+2024/01/30 22:02:28 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:02:39 - mmengine - INFO - Epoch(train)  [69][10/26]  base_lr: 1.5287e-05 lr: 3.8858e-06  eta: 0:14:48  time: 1.0844  data_time: 0.0092  memory: 4441  loss: 0.0399  decode.loss_ce: 0.0399  decode.acc_seg: 99.4577
+2024/01/30 22:02:50 - mmengine - INFO - Epoch(train)  [69][20/26]  base_lr: 1.5287e-05 lr: 3.8858e-06  eta: 0:14:38  time: 1.0866  data_time: 0.0090  memory: 4441  loss: 0.0395  decode.loss_ce: 0.0395  decode.acc_seg: 99.3955
+2024/01/30 22:02:56 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:03:07 - mmengine - INFO - Epoch(train)  [70][10/26]  base_lr: 1.4431e-05 lr: 3.6681e-06  eta: 0:14:20  time: 1.0913  data_time: 0.0084  memory: 4441  loss: 0.0392  decode.loss_ce: 0.0392  decode.acc_seg: 99.8291
+2024/01/30 22:03:18 - mmengine - INFO - Epoch(train)  [70][20/26]  base_lr: 1.4431e-05 lr: 3.6681e-06  eta: 0:14:09  time: 1.0914  data_time: 0.0084  memory: 4441  loss: 0.0402  decode.loss_ce: 0.0402  decode.acc_seg: 98.9789
+2024/01/30 22:03:24 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:03:24 - mmengine - INFO - Saving checkpoint at 70 epochs
+2024/01/30 22:03:38 - mmengine - INFO - Epoch(train)  [71][10/26]  base_lr: 1.3592e-05 lr: 3.4548e-06  eta: 0:13:52  time: 1.0974  data_time: 0.0216  memory: 4441  loss: 0.0410  decode.loss_ce: 0.0410  decode.acc_seg: 98.8594
+2024/01/30 22:03:49 - mmengine - INFO - Epoch(train)  [71][20/26]  base_lr: 1.3592e-05 lr: 3.4548e-06  eta: 0:13:42  time: 1.0957  data_time: 0.0216  memory: 4441  loss: 0.0446  decode.loss_ce: 0.0446  decode.acc_seg: 97.0477
+2024/01/30 22:03:56 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:04:06 - mmengine - INFO - Epoch(train)  [72][10/26]  base_lr: 1.2770e-05 lr: 3.2460e-06  eta: 0:13:24  time: 1.0903  data_time: 0.0215  memory: 4441  loss: 0.0451  decode.loss_ce: 0.0451  decode.acc_seg: 97.4344
+2024/01/30 22:04:17 - mmengine - INFO - Epoch(train)  [72][20/26]  base_lr: 1.2770e-05 lr: 3.2460e-06  eta: 0:13:13  time: 1.0900  data_time: 0.0214  memory: 4441  loss: 0.0450  decode.loss_ce: 0.0450  decode.acc_seg: 98.3914
+2024/01/30 22:04:23 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:04:34 - mmengine - INFO - Epoch(train)  [73][10/26]  base_lr: 1.1968e-05 lr: 3.0420e-06  eta: 0:12:56  time: 1.0686  data_time: 0.0081  memory: 4441  loss: 0.0460  decode.loss_ce: 0.0460  decode.acc_seg: 99.4862
+2024/01/30 22:04:45 - mmengine - INFO - Epoch(train)  [73][20/26]  base_lr: 1.1968e-05 lr: 3.0420e-06  eta: 0:12:45  time: 1.0657  data_time: 0.0079  memory: 4441  loss: 0.0419  decode.loss_ce: 0.0419  decode.acc_seg: 98.9455
+2024/01/30 22:04:51 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:05:02 - mmengine - INFO - Epoch(train)  [74][10/26]  base_lr: 1.1185e-05 lr: 2.8430e-06  eta: 0:12:28  time: 1.0639  data_time: 0.0083  memory: 4441  loss: 0.0421  decode.loss_ce: 0.0421  decode.acc_seg: 99.3231
+2024/01/30 22:05:12 - mmengine - INFO - Epoch(train)  [74][20/26]  base_lr: 1.1185e-05 lr: 2.8430e-06  eta: 0:12:17  time: 1.0618  data_time: 0.0081  memory: 4441  loss: 0.0446  decode.loss_ce: 0.0446  decode.acc_seg: 97.8807
+2024/01/30 22:05:19 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:05:29 - mmengine - INFO - Epoch(train)  [75][10/26]  base_lr: 1.0422e-05 lr: 2.6492e-06  eta: 0:11:59  time: 1.0627  data_time: 0.0090  memory: 4441  loss: 0.0455  decode.loss_ce: 0.0455  decode.acc_seg: 99.4789
+2024/01/30 22:05:40 - mmengine - INFO - Epoch(train)  [75][20/26]  base_lr: 1.0422e-05 lr: 2.6492e-06  eta: 0:11:49  time: 1.0653  data_time: 0.0089  memory: 4441  loss: 0.0453  decode.loss_ce: 0.0453  decode.acc_seg: 99.6843
+2024/01/30 22:05:46 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:05:57 - mmengine - INFO - Epoch(train)  [76][10/26]  base_lr: 9.6816e-06 lr: 2.4609e-06  eta: 0:11:31  time: 1.0673  data_time: 0.0092  memory: 4441  loss: 0.0464  decode.loss_ce: 0.0464  decode.acc_seg: 99.4819
+2024/01/30 22:06:08 - mmengine - INFO - Epoch(train)  [76][20/26]  base_lr: 9.6816e-06 lr: 2.4609e-06  eta: 0:11:20  time: 1.0697  data_time: 0.0092  memory: 4441  loss: 0.0447  decode.loss_ce: 0.0447  decode.acc_seg: 98.5014
+2024/01/30 22:06:14 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:06:25 - mmengine - INFO - Epoch(train)  [77][10/26]  base_lr: 8.9629e-06 lr: 2.2782e-06  eta: 0:11:03  time: 1.0718  data_time: 0.0089  memory: 4441  loss: 0.0411  decode.loss_ce: 0.0411  decode.acc_seg: 99.2878
+2024/01/30 22:06:36 - mmengine - INFO - Epoch(train)  [77][20/26]  base_lr: 8.9629e-06 lr: 2.2782e-06  eta: 0:10:52  time: 1.0727  data_time: 0.0091  memory: 4441  loss: 0.0413  decode.loss_ce: 0.0413  decode.acc_seg: 99.3497
+2024/01/30 22:06:40 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:06:42 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:06:53 - mmengine - INFO - Epoch(train)  [78][10/26]  base_lr: 8.2672e-06 lr: 2.1014e-06  eta: 0:10:35  time: 1.0735  data_time: 0.0089  memory: 4441  loss: 0.0414  decode.loss_ce: 0.0414  decode.acc_seg: 99.4319
+2024/01/30 22:07:04 - mmengine - INFO - Epoch(train)  [78][20/26]  base_lr: 8.2672e-06 lr: 2.1014e-06  eta: 0:10:24  time: 1.0734  data_time: 0.0090  memory: 4441  loss: 0.0400  decode.loss_ce: 0.0400  decode.acc_seg: 98.9909
+2024/01/30 22:07:10 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:07:21 - mmengine - INFO - Epoch(train)  [79][10/26]  base_lr: 7.5954e-06 lr: 1.9306e-06  eta: 0:10:07  time: 1.0723  data_time: 0.0094  memory: 4441  loss: 0.0416  decode.loss_ce: 0.0416  decode.acc_seg: 98.8735
+2024/01/30 22:07:31 - mmengine - INFO - Epoch(train)  [79][20/26]  base_lr: 7.5954e-06 lr: 1.9306e-06  eta: 0:09:56  time: 1.0707  data_time: 0.0091  memory: 4441  loss: 0.0392  decode.loss_ce: 0.0392  decode.acc_seg: 98.2900
+2024/01/30 22:07:38 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:07:49 - mmengine - INFO - Epoch(train)  [80][10/26]  base_lr: 6.9480e-06 lr: 1.7661e-06  eta: 0:09:39  time: 1.0686  data_time: 0.0092  memory: 4441  loss: 0.0395  decode.loss_ce: 0.0395  decode.acc_seg: 100.0000
+2024/01/30 22:07:59 - mmengine - INFO - Epoch(train)  [80][20/26]  base_lr: 6.9480e-06 lr: 1.7661e-06  eta: 0:09:28  time: 1.0659  data_time: 0.0091  memory: 4441  loss: 0.0387  decode.loss_ce: 0.0387  decode.acc_seg: 99.4448
+2024/01/30 22:08:05 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:08:05 - mmengine - INFO - Saving checkpoint at 80 epochs
+2024/01/30 22:08:14 - mmengine - INFO - Epoch(val)  [80][10/49]    eta: 0:00:10  time: 0.1600  data_time: 0.0608  memory: 4441  
+2024/01/30 22:08:15 - mmengine - INFO - Epoch(val)  [80][20/49]    eta: 0:00:05  time: 0.1590  data_time: 0.0608  memory: 2088  
+2024/01/30 22:08:16 - mmengine - INFO - Epoch(val)  [80][30/49]    eta: 0:00:03  time: 0.1580  data_time: 0.0606  memory: 2088  
+2024/01/30 22:08:17 - mmengine - INFO - Epoch(val)  [80][40/49]    eta: 0:00:01  time: 0.1570  data_time: 0.0605  memory: 2088  
+2024/01/30 22:08:19 - mmengine - INFO - per class results:
+2024/01/30 22:08:19 - mmengine - INFO - 
++-----------+--------+-----------+--------+-------+-------+
+|   Class   | Fscore | Precision | Recall |  IoU  |  Acc  |
++-----------+--------+-----------+--------+-------+-------+
+| unchanged | 97.52  |   96.95   |  98.1  | 95.16 |  98.1 |
+|  changed  | 49.55  |   56.24   | 44.28  | 32.93 | 44.28 |
++-----------+--------+-----------+--------+-------+-------+
+2024/01/30 22:08:19 - mmengine - INFO - Epoch(val) [80][49/49]    aAcc: 95.2800  mFscore: 73.5300  mPrecision: 76.6000  mRecall: 71.1900  mIoU: 64.0500  mAcc: 71.1900  data_time: 0.0605  time: 0.1563
+2024/01/30 22:08:30 - mmengine - INFO - Epoch(train)  [81][10/26]  base_lr: 6.3258e-06 lr: 1.6079e-06  eta: 0:09:10  time: 1.0665  data_time: 0.0118  memory: 4441  loss: 0.0375  decode.loss_ce: 0.0375  decode.acc_seg: 99.5213
+2024/01/30 22:08:40 - mmengine - INFO - Epoch(train)  [81][20/26]  base_lr: 6.3258e-06 lr: 1.6079e-06  eta: 0:08:59  time: 1.0663  data_time: 0.0115  memory: 4441  loss: 0.0386  decode.loss_ce: 0.0386  decode.acc_seg: 99.7012
+2024/01/30 22:08:47 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:08:57 - mmengine - INFO - Epoch(train)  [82][10/26]  base_lr: 5.7295e-06 lr: 1.4564e-06  eta: 0:08:42  time: 1.0674  data_time: 0.0110  memory: 4441  loss: 0.0404  decode.loss_ce: 0.0404  decode.acc_seg: 99.2731
+2024/01/30 22:09:08 - mmengine - INFO - Epoch(train)  [82][20/26]  base_lr: 5.7295e-06 lr: 1.4564e-06  eta: 0:08:31  time: 1.0700  data_time: 0.0108  memory: 4441  loss: 0.0409  decode.loss_ce: 0.0409  decode.acc_seg: 98.1669
+2024/01/30 22:09:15 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:09:25 - mmengine - INFO - Epoch(train)  [83][10/26]  base_lr: 5.1597e-06 lr: 1.3115e-06  eta: 0:08:14  time: 1.0695  data_time: 0.0080  memory: 4441  loss: 0.0448  decode.loss_ce: 0.0448  decode.acc_seg: 98.9924
+2024/01/30 22:09:36 - mmengine - INFO - Epoch(train)  [83][20/26]  base_lr: 5.1597e-06 lr: 1.3115e-06  eta: 0:08:03  time: 1.0687  data_time: 0.0080  memory: 4441  loss: 0.0425  decode.loss_ce: 0.0425  decode.acc_seg: 99.1239
+2024/01/30 22:09:42 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:09:53 - mmengine - INFO - Epoch(train)  [84][10/26]  base_lr: 4.6171e-06 lr: 1.1736e-06  eta: 0:07:46  time: 1.0704  data_time: 0.0088  memory: 4441  loss: 0.0434  decode.loss_ce: 0.0434  decode.acc_seg: 99.1405
+2024/01/30 22:10:04 - mmengine - INFO - Epoch(train)  [84][20/26]  base_lr: 4.6171e-06 lr: 1.1736e-06  eta: 0:07:35  time: 1.0711  data_time: 0.0086  memory: 4441  loss: 0.0437  decode.loss_ce: 0.0437  decode.acc_seg: 99.0614
+2024/01/30 22:10:10 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:10:21 - mmengine - INFO - Epoch(train)  [85][10/26]  base_lr: 4.1023e-06 lr: 1.0428e-06  eta: 0:07:18  time: 1.0718  data_time: 0.0087  memory: 4441  loss: 0.0407  decode.loss_ce: 0.0407  decode.acc_seg: 99.6717
+2024/01/30 22:10:32 - mmengine - INFO - Epoch(train)  [85][20/26]  base_lr: 4.1023e-06 lr: 1.0428e-06  eta: 0:07:07  time: 1.0721  data_time: 0.0085  memory: 4441  loss: 0.0420  decode.loss_ce: 0.0420  decode.acc_seg: 98.5321
+2024/01/30 22:10:38 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:10:49 - mmengine - INFO - Epoch(train)  [86][10/26]  base_lr: 3.6158e-06 lr: 9.1908e-07  eta: 0:06:50  time: 1.0706  data_time: 0.0086  memory: 4441  loss: 0.0411  decode.loss_ce: 0.0411  decode.acc_seg: 99.1725
+2024/01/30 22:10:59 - mmengine - INFO - Epoch(train)  [86][20/26]  base_lr: 3.6158e-06 lr: 9.1908e-07  eta: 0:06:39  time: 1.0702  data_time: 0.0088  memory: 4441  loss: 0.0408  decode.loss_ce: 0.0408  decode.acc_seg: 99.8054
+2024/01/30 22:11:06 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:11:17 - mmengine - INFO - Epoch(train)  [87][10/26]  base_lr: 3.1581e-06 lr: 8.0275e-07  eta: 0:06:22  time: 1.0706  data_time: 0.0083  memory: 4441  loss: 0.0400  decode.loss_ce: 0.0400  decode.acc_seg: 98.9377
+2024/01/30 22:11:27 - mmengine - INFO - Epoch(train)  [87][20/26]  base_lr: 3.1581e-06 lr: 8.0275e-07  eta: 0:06:11  time: 1.0732  data_time: 0.0084  memory: 4441  loss: 0.0422  decode.loss_ce: 0.0422  decode.acc_seg: 97.2570
+2024/01/30 22:11:34 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:11:45 - mmengine - INFO - Epoch(train)  [88][10/26]  base_lr: 2.7298e-06 lr: 6.9388e-07  eta: 0:05:54  time: 1.0743  data_time: 0.0081  memory: 4441  loss: 0.0399  decode.loss_ce: 0.0399  decode.acc_seg: 99.5452
+2024/01/30 22:11:55 - mmengine - INFO - Epoch(train)  [88][20/26]  base_lr: 2.7298e-06 lr: 6.9388e-07  eta: 0:05:43  time: 1.0737  data_time: 0.0083  memory: 4441  loss: 0.0409  decode.loss_ce: 0.0409  decode.acc_seg: 99.7830
+2024/01/30 22:12:02 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:12:13 - mmengine - INFO - Epoch(train)  [89][10/26]  base_lr: 2.3313e-06 lr: 5.9259e-07  eta: 0:05:25  time: 1.0739  data_time: 0.0090  memory: 4441  loss: 0.0418  decode.loss_ce: 0.0418  decode.acc_seg: 95.3367
+2024/01/30 22:12:23 - mmengine - INFO - Epoch(train)  [89][20/26]  base_lr: 2.3313e-06 lr: 5.9259e-07  eta: 0:05:15  time: 1.0734  data_time: 0.0090  memory: 4441  loss: 0.0411  decode.loss_ce: 0.0411  decode.acc_seg: 99.7783
+2024/01/30 22:12:30 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:12:40 - mmengine - INFO - Epoch(train)  [90][10/26]  base_lr: 1.9631e-06 lr: 4.9899e-07  eta: 0:04:57  time: 1.0725  data_time: 0.0096  memory: 4441  loss: 0.0413  decode.loss_ce: 0.0413  decode.acc_seg: 98.8476
+2024/01/30 22:12:51 - mmengine - INFO - Epoch(train)  [90][20/26]  base_lr: 1.9631e-06 lr: 4.9899e-07  eta: 0:04:47  time: 1.0725  data_time: 0.0096  memory: 4441  loss: 0.0403  decode.loss_ce: 0.0403  decode.acc_seg: 96.7054
+2024/01/30 22:12:57 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:12:57 - mmengine - INFO - Saving checkpoint at 90 epochs
+2024/01/30 22:13:15 - mmengine - INFO - Epoch(train)  [91][10/26]  base_lr: 1.6255e-06 lr: 4.1318e-07  eta: 0:04:29  time: 1.0789  data_time: 0.0135  memory: 4441  loss: 0.0420  decode.loss_ce: 0.0420  decode.acc_seg: 98.5504
+2024/01/30 22:13:25 - mmengine - INFO - Epoch(train)  [91][20/26]  base_lr: 1.6255e-06 lr: 4.1318e-07  eta: 0:04:19  time: 1.0781  data_time: 0.0133  memory: 4441  loss: 0.0422  decode.loss_ce: 0.0422  decode.acc_seg: 100.0000
+2024/01/30 22:13:32 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:13:43 - mmengine - INFO - Epoch(train)  [92][10/26]  base_lr: 1.3189e-06 lr: 3.3525e-07  eta: 0:04:01  time: 1.0788  data_time: 0.0127  memory: 4441  loss: 0.0434  decode.loss_ce: 0.0434  decode.acc_seg: 98.8071
+2024/01/30 22:13:53 - mmengine - INFO - Epoch(train)  [92][20/26]  base_lr: 1.3189e-06 lr: 3.3525e-07  eta: 0:03:50  time: 1.0784  data_time: 0.0125  memory: 4441  loss: 0.0430  decode.loss_ce: 0.0430  decode.acc_seg: 98.8552
+2024/01/30 22:14:00 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:14:10 - mmengine - INFO - Epoch(train)  [93][10/26]  base_lr: 1.0437e-06 lr: 2.6530e-07  eta: 0:03:33  time: 1.0692  data_time: 0.0086  memory: 4441  loss: 0.0387  decode.loss_ce: 0.0387  decode.acc_seg: 99.8746
+2024/01/30 22:14:21 - mmengine - INFO - Epoch(train)  [93][20/26]  base_lr: 1.0437e-06 lr: 2.6530e-07  eta: 0:03:22  time: 1.0683  data_time: 0.0084  memory: 4441  loss: 0.0368  decode.loss_ce: 0.0368  decode.acc_seg: 98.5208
+2024/01/30 22:14:27 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:14:38 - mmengine - INFO - Epoch(train)  [94][10/26]  base_lr: 8.0020e-07 lr: 2.0340e-07  eta: 0:03:05  time: 1.0661  data_time: 0.0087  memory: 4441  loss: 0.0367  decode.loss_ce: 0.0367  decode.acc_seg: 99.2793
+2024/01/30 22:14:49 - mmengine - INFO - Epoch(train)  [94][20/26]  base_lr: 8.0020e-07 lr: 2.0340e-07  eta: 0:02:54  time: 1.0658  data_time: 0.0086  memory: 4441  loss: 0.0386  decode.loss_ce: 0.0386  decode.acc_seg: 98.3055
+2024/01/30 22:14:55 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:15:06 - mmengine - INFO - Epoch(train)  [95][10/26]  base_lr: 5.8860e-07 lr: 1.4961e-07  eta: 0:02:37  time: 1.0658  data_time: 0.0085  memory: 4441  loss: 0.0392  decode.loss_ce: 0.0392  decode.acc_seg: 99.7497
+2024/01/30 22:15:16 - mmengine - INFO - Epoch(train)  [95][20/26]  base_lr: 5.8860e-07 lr: 1.4961e-07  eta: 0:02:26  time: 1.0659  data_time: 0.0087  memory: 4441  loss: 0.0407  decode.loss_ce: 0.0407  decode.acc_seg: 99.8920
+2024/01/30 22:15:23 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:15:34 - mmengine - INFO - Epoch(train)  [96][10/26]  base_lr: 4.0916e-07 lr: 1.0400e-07  eta: 0:02:09  time: 1.0659  data_time: 0.0084  memory: 4441  loss: 0.0378  decode.loss_ce: 0.0378  decode.acc_seg: 99.7537
+2024/01/30 22:15:44 - mmengine - INFO - Epoch(train)  [96][20/26]  base_lr: 4.0916e-07 lr: 1.0400e-07  eta: 0:01:58  time: 1.0647  data_time: 0.0085  memory: 4441  loss: 0.0375  decode.loss_ce: 0.0375  decode.acc_seg: 96.8217
+2024/01/30 22:15:50 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:16:01 - mmengine - INFO - Epoch(train)  [97][10/26]  base_lr: 2.6208e-07 lr: 6.6617e-08  eta: 0:01:41  time: 1.0653  data_time: 0.0089  memory: 4441  loss: 0.0405  decode.loss_ce: 0.0405  decode.acc_seg: 98.8690
+2024/01/30 22:16:12 - mmengine - INFO - Epoch(train)  [97][20/26]  base_lr: 2.6208e-07 lr: 6.6617e-08  eta: 0:01:30  time: 1.0652  data_time: 0.0088  memory: 4441  loss: 0.0392  decode.loss_ce: 0.0392  decode.acc_seg: 99.2496
+2024/01/30 22:16:18 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:16:29 - mmengine - INFO - Epoch(train)  [98][10/26]  base_lr: 1.4751e-07 lr: 3.7496e-08  eta: 0:01:13  time: 1.0662  data_time: 0.0089  memory: 4441  loss: 0.0398  decode.loss_ce: 0.0398  decode.acc_seg: 99.5454
+2024/01/30 22:16:40 - mmengine - INFO - Epoch(train)  [98][20/26]  base_lr: 1.4751e-07 lr: 3.7496e-08  eta: 0:01:02  time: 1.0671  data_time: 0.0088  memory: 4441  loss: 0.0422  decode.loss_ce: 0.0422  decode.acc_seg: 98.4572
+2024/01/30 22:16:46 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:16:57 - mmengine - INFO - Epoch(train)  [99][10/26]  base_lr: 6.5591e-08 lr: 1.6672e-08  eta: 0:00:45  time: 1.0664  data_time: 0.0084  memory: 4441  loss: 0.0380  decode.loss_ce: 0.0380  decode.acc_seg: 97.1094
+2024/01/30 22:17:07 - mmengine - INFO - Epoch(train)  [99][20/26]  base_lr: 6.5591e-08 lr: 1.6672e-08  eta: 0:00:34  time: 1.0663  data_time: 0.0084  memory: 4441  loss: 0.0383  decode.loss_ce: 0.0383  decode.acc_seg: 97.7701
+2024/01/30 22:17:14 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:17:25 - mmengine - INFO - Epoch(train) [100][10/26]  base_lr: 1.6402e-08 lr: 4.1692e-09  eta: 0:00:17  time: 1.0672  data_time: 0.0089  memory: 4441  loss: 0.0401  decode.loss_ce: 0.0401  decode.acc_seg: 98.8364
+2024/01/30 22:17:35 - mmengine - INFO - Epoch(train) [100][20/26]  base_lr: 1.6402e-08 lr: 4.1692e-09  eta: 0:00:06  time: 1.0674  data_time: 0.0089  memory: 4441  loss: 0.0404  decode.loss_ce: 0.0404  decode.acc_seg: 99.2587
+2024/01/30 22:17:41 - mmengine - INFO - Exp name: rvsa-b-unet-96-mae_oscd_rgb_20240130_212824
+2024/01/30 22:17:41 - mmengine - INFO - Saving checkpoint at 100 epochs
+2024/01/30 22:17:46 - mmengine - INFO - Epoch(val) [100][10/49]    eta: 0:00:08  time: 0.1466  data_time: 0.0600  memory: 4441  
+2024/01/30 22:17:47 - mmengine - INFO - Epoch(val) [100][20/49]    eta: 0:00:04  time: 0.1464  data_time: 0.0598  memory: 2088  
+2024/01/30 22:17:48 - mmengine - INFO - Epoch(val) [100][30/49]    eta: 0:00:03  time: 0.1470  data_time: 0.0599  memory: 2088  
+2024/01/30 22:17:50 - mmengine - INFO - Epoch(val) [100][40/49]    eta: 0:00:01  time: 0.1475  data_time: 0.0596  memory: 2088  
+2024/01/30 22:17:51 - mmengine - INFO - per class results:
+2024/01/30 22:17:51 - mmengine - INFO - 
++-----------+--------+-----------+--------+-------+-------+
+|   Class   | Fscore | Precision | Recall |  IoU  |  Acc  |
++-----------+--------+-----------+--------+-------+-------+
+| unchanged | 97.51  |   97.03   | 97.99  | 95.14 | 97.99 |
+|  changed  | 50.28  |   55.74   |  45.8  | 33.59 |  45.8 |
++-----------+--------+-----------+--------+-------+-------+
+2024/01/30 22:17:51 - mmengine - INFO - Epoch(val) [100][49/49]    aAcc: 95.2500  mFscore: 73.9000  mPrecision: 76.3900  mRecall: 71.9000  mIoU: 64.3600  mAcc: 71.9000  data_time: 0.0596  time: 0.1483

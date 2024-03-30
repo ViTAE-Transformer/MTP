@@ -1,0 +1,3515 @@
+2024/01/30 21:29:08 - mmengine - INFO - Config:
+crop_size = (
+    224,
+    224,
+)
+data_preprocessor = dict(
+    bgr_to_rgb=True,
+    mean=[
+        123.675,
+        116.28,
+        103.53,
+        123.675,
+        116.28,
+        103.53,
+    ],
+    pad_val=0,
+    seg_pad_val=255,
+    size_divisor=32,
+    std=[
+        58.395,
+        57.12,
+        57.375,
+        58.395,
+        57.12,
+        57.375,
+    ],
+    test_cfg=dict(size_divisor=32),
+    type='DualInputSegDataPreProcessor')
+data_root = '/work/share/achk2o1zg1/diwang22/dataset/OSCD/oscd_rgb_patch_dataset'
+dataset_type = 'OSCD_RGB_CD_Dataset'
+default_hooks = dict(
+    checkpoint=dict(
+        by_epoch=True, interval=10, save_best='mIoU', type='CheckpointHook'),
+    logger=dict(interval=10, log_metric_by_epoch=False, type='LoggerHook'),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    timer=dict(type='IterTimerHook'),
+    visualization=dict(draw=True, interval=1, type='CDVisualizationHook'))
+default_scope = 'opencd'
+env_cfg = dict(
+    cudnn_benchmark=True,
+    dist_cfg=dict(backend='nccl'),
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+find_unused_parameters = True
+launcher = 'slurm'
+load_from = None
+log_level = 'INFO'
+log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
+model = dict(
+    backbone=dict(
+        channels=192,
+        depths=[
+            5,
+            5,
+            24,
+            5,
+        ],
+        drop_path_rate=0.2,
+        frozen_stages=4,
+        groups=[
+            12,
+            24,
+            48,
+            96,
+        ],
+        layer_scale=1e-05,
+        mlp_ratio=4.0,
+        norm_layer='LN',
+        offset_scale=2.0,
+        out_indices=(
+            0,
+            1,
+            2,
+            3,
+        ),
+        post_norm=True,
+        pretrained=
+        '/work/share/achk2o1zg1/diwang22/work_dir/multitask_pretrain/pretrain/avg/with_background/internimage_xl_448_imp_samrs_mtp_three/last_internimage_xl_ss_is_rd_pretrn_model_encoder.pth',
+        type='InternImage',
+        with_cp=False),
+    data_preprocessor=dict(
+        bgr_to_rgb=True,
+        mean=[
+            123.675,
+            116.28,
+            103.53,
+            123.675,
+            116.28,
+            103.53,
+        ],
+        pad_val=0,
+        seg_pad_val=255,
+        size_divisor=32,
+        std=[
+            58.395,
+            57.12,
+            57.375,
+            58.395,
+            57.12,
+            57.375,
+        ],
+        test_cfg=dict(size_divisor=32),
+        type='DualInputSegDataPreProcessor'),
+    decode_head=dict(
+        align_corners=False,
+        attention_type=None,
+        center=False,
+        channels=64,
+        decoder_channels=[
+            512,
+            256,
+            128,
+            64,
+        ],
+        dropout_ratio=0.1,
+        encoder_channels=[
+            192,
+            384,
+            768,
+            1536,
+        ],
+        ignore_index=255,
+        in_channels=[
+            192,
+            384,
+            768,
+            1536,
+        ],
+        in_index=[
+            0,
+            1,
+            2,
+            3,
+        ],
+        loss_decode=dict(
+            loss_weight=1.0, type='mmseg.CrossEntropyLoss', use_sigmoid=False),
+        n_blocks=4,
+        norm_cfg=dict(requires_grad=True, type='SyncBN'),
+        num_classes=2,
+        type='UNetHead',
+        use_batchnorm=True),
+    neck=dict(
+        out_indices=(
+            0,
+            1,
+            2,
+            3,
+        ),
+        policy='abs_diff',
+        type='FeatureFusionNeck'),
+    test_cfg=dict(mode='whole'),
+    train_cfg=dict(),
+    type='SiamEncoderDecoder')
+norm_cfg = dict(requires_grad=True, type='SyncBN')
+optim_wrapper = dict(
+    constructor='CustomLayerDecayOptimizerConstructor_InternImage',
+    optimizer=dict(
+        betas=(
+            0.9,
+            0.999,
+        ), lr=2e-05, type='AdamW', weight_decay=0.05),
+    paramwise_cfg=dict(
+        depths=[
+            5,
+            5,
+            24,
+            5,
+        ], layer_decay_rate=0.94, num_layers=39))
+param_scheduler = [
+    dict(
+        begin=0,
+        by_epoch=True,
+        convert_to_iter_based=True,
+        end=5,
+        start_factor=1e-06,
+        type='LinearLR'),
+    dict(T_max=95, begin=5, by_epoch=True, end=100, type='CosineAnnealingLR'),
+]
+resume = False
+test_cfg = dict(type='TestLoop')
+test_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        data_prefix=dict(
+            img_path_from='test/A',
+            img_path_to='test/B',
+            seg_map_path='test/label'),
+        data_root=
+        '/work/share/achk2o1zg1/diwang22/dataset/OSCD/oscd_rgb_patch_dataset',
+        pipeline=[
+            dict(type='MultiImgLoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                224,
+                224,
+            ), type='MultiImgResize'),
+            dict(type='MultiImgLoadAnnotations'),
+            dict(type='MultiImgPackSegInputs'),
+        ],
+        type='OSCD_RGB_CD_Dataset'),
+    num_workers=8,
+    persistent_workers=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+test_evaluator = dict(
+    iou_metrics=[
+        'mFscore',
+        'mIoU',
+    ], type='mmseg.IoUMetric')
+train_cfg = dict(max_epochs=100, type='EpochBasedTrainLoop', val_interval=20)
+train_dataloader = dict(
+    batch_size=4,
+    dataset=dict(
+        data_prefix=dict(
+            img_path_from='train/A',
+            img_path_to='train/B',
+            seg_map_path='train/label'),
+        data_root=
+        '/work/share/achk2o1zg1/diwang22/dataset/OSCD/oscd_rgb_patch_dataset',
+        pipeline=[
+            dict(type='MultiImgLoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                224,
+                224,
+            ), type='MultiImgResize'),
+            dict(type='MultiImgLoadAnnotations'),
+            dict(
+                degree=(
+                    -20,
+                    20,
+                ),
+                flip_prob=0.5,
+                rotate_prob=0.5,
+                type='MultiImgRandomRotFlip'),
+            dict(
+                cat_max_ratio=0.75,
+                crop_size=(
+                    224,
+                    224,
+                ),
+                type='MultiImgRandomCrop'),
+            dict(prob=0.5, type='MultiImgExchangeTime'),
+            dict(
+                brightness_delta=10,
+                contrast_range=(
+                    0.8,
+                    1.2,
+                ),
+                hue_delta=10,
+                saturation_range=(
+                    0.8,
+                    1.2,
+                ),
+                type='MultiImgPhotoMetricDistortion'),
+            dict(type='MultiImgPackSegInputs'),
+        ],
+        type='OSCD_RGB_CD_Dataset'),
+    num_workers=8,
+    persistent_workers=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+train_pipeline = [
+    dict(type='MultiImgLoadImageFromFile'),
+    dict(keep_ratio=True, scale=(
+        224,
+        224,
+    ), type='MultiImgResize'),
+    dict(type='MultiImgLoadAnnotations'),
+    dict(
+        degree=(
+            -20,
+            20,
+        ),
+        flip_prob=0.5,
+        rotate_prob=0.5,
+        type='MultiImgRandomRotFlip'),
+    dict(
+        cat_max_ratio=0.75, crop_size=(
+            224,
+            224,
+        ), type='MultiImgRandomCrop'),
+    dict(prob=0.5, type='MultiImgExchangeTime'),
+    dict(
+        brightness_delta=10,
+        contrast_range=(
+            0.8,
+            1.2,
+        ),
+        hue_delta=10,
+        saturation_range=(
+            0.8,
+            1.2,
+        ),
+        type='MultiImgPhotoMetricDistortion'),
+    dict(type='MultiImgPackSegInputs'),
+]
+val_cfg = dict(type='ValLoop')
+val_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        data_prefix=dict(
+            img_path_from='test/A',
+            img_path_to='test/B',
+            seg_map_path='test/label'),
+        data_root=
+        '/work/share/achk2o1zg1/diwang22/dataset/OSCD/oscd_rgb_patch_dataset',
+        pipeline=[
+            dict(type='MultiImgLoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                224,
+                224,
+            ), type='MultiImgResize'),
+            dict(type='MultiImgLoadAnnotations'),
+            dict(type='MultiImgPackSegInputs'),
+        ],
+        type='OSCD_RGB_CD_Dataset'),
+    num_workers=8,
+    persistent_workers=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+val_evaluator = dict(
+    iou_metrics=[
+        'mFscore',
+        'mIoU',
+    ], type='mmseg.IoUMetric')
+val_pipeline = [
+    dict(type='MultiImgLoadImageFromFile'),
+    dict(keep_ratio=True, scale=(
+        224,
+        224,
+    ), type='MultiImgResize'),
+    dict(type='MultiImgLoadAnnotations'),
+    dict(type='MultiImgPackSegInputs'),
+]
+vis_backends = [
+    dict(type='CDLocalVisBackend'),
+]
+visualizer = dict(
+    alpha=1.0,
+    name='visualizer',
+    type='CDLocalVisualizer',
+    vis_backends=[
+        dict(type='CDLocalVisBackend'),
+    ])
+work_dir = '/work/share/achk2o1zg1/diwang22/work_dir/multitask_pretrain/finetune/Change_Detection/oscd_rgb/intern-xl-unet-96-imp-mtp_oscd_rgb'
+
+2024/01/30 21:30:41 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) CDVisualizationHook                
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) CDVisualizationHook                
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) CDVisualizationHook                
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+2024/01/30 21:30:42 - mmengine - WARNING - The prefix is not set in metric class IoUMetric.
+Name of parameter - Initialization information
+
+backbone.patch_embed.conv1.weight - torch.Size([96, 3, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.patch_embed.conv1.bias - torch.Size([96]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.patch_embed.norm1.1.weight - torch.Size([96]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.patch_embed.norm1.1.bias - torch.Size([96]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.patch_embed.conv2.weight - torch.Size([192, 96, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.patch_embed.conv2.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.patch_embed.norm2.1.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.patch_embed.norm2.1.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.gamma1 - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.gamma2 - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.norm1.0.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.norm1.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.dcn.dw_conv.0.weight - torch.Size([192, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.dcn.dw_conv.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.dcn.dw_conv.1.1.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.dcn.dw_conv.1.1.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.dcn.offset.weight - torch.Size([216, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.dcn.offset.bias - torch.Size([216]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.dcn.mask.weight - torch.Size([108, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.dcn.mask.bias - torch.Size([108]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.dcn.input_proj.weight - torch.Size([192, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.dcn.input_proj.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.dcn.output_proj.weight - torch.Size([192, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.dcn.output_proj.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.norm2.0.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.norm2.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.mlp.fc1.weight - torch.Size([768, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.mlp.fc1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.mlp.fc2.weight - torch.Size([192, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.0.mlp.fc2.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.gamma1 - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.gamma2 - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.norm1.0.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.norm1.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.dcn.dw_conv.0.weight - torch.Size([192, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.dcn.dw_conv.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.dcn.dw_conv.1.1.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.dcn.dw_conv.1.1.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.dcn.offset.weight - torch.Size([216, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.dcn.offset.bias - torch.Size([216]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.dcn.mask.weight - torch.Size([108, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.dcn.mask.bias - torch.Size([108]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.dcn.input_proj.weight - torch.Size([192, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.dcn.input_proj.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.dcn.output_proj.weight - torch.Size([192, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.dcn.output_proj.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.norm2.0.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.norm2.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.mlp.fc1.weight - torch.Size([768, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.mlp.fc1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.mlp.fc2.weight - torch.Size([192, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.1.mlp.fc2.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.gamma1 - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.gamma2 - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.norm1.0.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.norm1.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.dcn.dw_conv.0.weight - torch.Size([192, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.dcn.dw_conv.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.dcn.dw_conv.1.1.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.dcn.dw_conv.1.1.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.dcn.offset.weight - torch.Size([216, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.dcn.offset.bias - torch.Size([216]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.dcn.mask.weight - torch.Size([108, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.dcn.mask.bias - torch.Size([108]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.dcn.input_proj.weight - torch.Size([192, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.dcn.input_proj.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.dcn.output_proj.weight - torch.Size([192, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.dcn.output_proj.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.norm2.0.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.norm2.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.mlp.fc1.weight - torch.Size([768, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.mlp.fc1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.mlp.fc2.weight - torch.Size([192, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.2.mlp.fc2.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.gamma1 - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.gamma2 - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.norm1.0.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.norm1.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.dcn.dw_conv.0.weight - torch.Size([192, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.dcn.dw_conv.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.dcn.dw_conv.1.1.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.dcn.dw_conv.1.1.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.dcn.offset.weight - torch.Size([216, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.dcn.offset.bias - torch.Size([216]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.dcn.mask.weight - torch.Size([108, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.dcn.mask.bias - torch.Size([108]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.dcn.input_proj.weight - torch.Size([192, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.dcn.input_proj.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.dcn.output_proj.weight - torch.Size([192, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.dcn.output_proj.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.norm2.0.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.norm2.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.mlp.fc1.weight - torch.Size([768, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.mlp.fc1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.mlp.fc2.weight - torch.Size([192, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.3.mlp.fc2.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.gamma1 - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.gamma2 - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.norm1.0.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.norm1.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.dcn.dw_conv.0.weight - torch.Size([192, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.dcn.dw_conv.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.dcn.dw_conv.1.1.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.dcn.dw_conv.1.1.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.dcn.offset.weight - torch.Size([216, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.dcn.offset.bias - torch.Size([216]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.dcn.mask.weight - torch.Size([108, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.dcn.mask.bias - torch.Size([108]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.dcn.input_proj.weight - torch.Size([192, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.dcn.input_proj.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.dcn.output_proj.weight - torch.Size([192, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.dcn.output_proj.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.norm2.0.weight - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.norm2.0.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.mlp.fc1.weight - torch.Size([768, 192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.mlp.fc1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.mlp.fc2.weight - torch.Size([192, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.blocks.4.mlp.fc2.bias - torch.Size([192]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.downsample.conv.weight - torch.Size([384, 192, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.downsample.norm.1.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.0.downsample.norm.1.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.gamma1 - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.gamma2 - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.norm1.0.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.norm1.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.dcn.dw_conv.0.weight - torch.Size([384, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.dcn.dw_conv.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.dcn.dw_conv.1.1.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.dcn.dw_conv.1.1.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.dcn.offset.weight - torch.Size([432, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.dcn.offset.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.dcn.mask.weight - torch.Size([216, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.dcn.mask.bias - torch.Size([216]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.dcn.input_proj.weight - torch.Size([384, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.dcn.input_proj.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.dcn.output_proj.weight - torch.Size([384, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.dcn.output_proj.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.norm2.0.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.norm2.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.mlp.fc1.weight - torch.Size([1536, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.mlp.fc1.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.mlp.fc2.weight - torch.Size([384, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.0.mlp.fc2.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.gamma1 - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.gamma2 - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.norm1.0.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.norm1.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.dcn.dw_conv.0.weight - torch.Size([384, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.dcn.dw_conv.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.dcn.dw_conv.1.1.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.dcn.dw_conv.1.1.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.dcn.offset.weight - torch.Size([432, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.dcn.offset.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.dcn.mask.weight - torch.Size([216, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.dcn.mask.bias - torch.Size([216]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.dcn.input_proj.weight - torch.Size([384, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.dcn.input_proj.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.dcn.output_proj.weight - torch.Size([384, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.dcn.output_proj.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.norm2.0.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.norm2.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.mlp.fc1.weight - torch.Size([1536, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.mlp.fc1.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.mlp.fc2.weight - torch.Size([384, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.1.mlp.fc2.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.gamma1 - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.gamma2 - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.norm1.0.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.norm1.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.dcn.dw_conv.0.weight - torch.Size([384, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.dcn.dw_conv.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.dcn.dw_conv.1.1.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.dcn.dw_conv.1.1.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.dcn.offset.weight - torch.Size([432, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.dcn.offset.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.dcn.mask.weight - torch.Size([216, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.dcn.mask.bias - torch.Size([216]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.dcn.input_proj.weight - torch.Size([384, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.dcn.input_proj.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.dcn.output_proj.weight - torch.Size([384, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.dcn.output_proj.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.norm2.0.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.norm2.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.mlp.fc1.weight - torch.Size([1536, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.mlp.fc1.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.mlp.fc2.weight - torch.Size([384, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.2.mlp.fc2.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.gamma1 - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.gamma2 - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.norm1.0.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.norm1.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.dcn.dw_conv.0.weight - torch.Size([384, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.dcn.dw_conv.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.dcn.dw_conv.1.1.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.dcn.dw_conv.1.1.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.dcn.offset.weight - torch.Size([432, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.dcn.offset.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.dcn.mask.weight - torch.Size([216, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.dcn.mask.bias - torch.Size([216]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.dcn.input_proj.weight - torch.Size([384, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.dcn.input_proj.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.dcn.output_proj.weight - torch.Size([384, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.dcn.output_proj.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.norm2.0.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.norm2.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.mlp.fc1.weight - torch.Size([1536, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.mlp.fc1.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.mlp.fc2.weight - torch.Size([384, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.3.mlp.fc2.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.gamma1 - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.gamma2 - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.norm1.0.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.norm1.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.dcn.dw_conv.0.weight - torch.Size([384, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.dcn.dw_conv.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.dcn.dw_conv.1.1.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.dcn.dw_conv.1.1.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.dcn.offset.weight - torch.Size([432, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.dcn.offset.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.dcn.mask.weight - torch.Size([216, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.dcn.mask.bias - torch.Size([216]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.dcn.input_proj.weight - torch.Size([384, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.dcn.input_proj.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.dcn.output_proj.weight - torch.Size([384, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.dcn.output_proj.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.norm2.0.weight - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.norm2.0.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.mlp.fc1.weight - torch.Size([1536, 384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.mlp.fc1.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.mlp.fc2.weight - torch.Size([384, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.blocks.4.mlp.fc2.bias - torch.Size([384]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.downsample.conv.weight - torch.Size([768, 384, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.downsample.norm.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.1.downsample.norm.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.0.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.1.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.2.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.3.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.4.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.5.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.6.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.7.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.8.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.9.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.10.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.11.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.12.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.13.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.14.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.15.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.16.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.17.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.18.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.19.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.20.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.21.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.22.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.gamma1 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.gamma2 - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.norm1.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.norm1.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.dcn.dw_conv.0.weight - torch.Size([768, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.dcn.dw_conv.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.dcn.dw_conv.1.1.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.dcn.dw_conv.1.1.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.dcn.offset.weight - torch.Size([864, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.dcn.offset.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.dcn.mask.weight - torch.Size([432, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.dcn.mask.bias - torch.Size([432]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.dcn.input_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.dcn.input_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.dcn.output_proj.weight - torch.Size([768, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.dcn.output_proj.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.norm2.0.weight - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.norm2.0.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.mlp.fc1.weight - torch.Size([3072, 768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.mlp.fc1.bias - torch.Size([3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.mlp.fc2.weight - torch.Size([768, 3072]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.blocks.23.mlp.fc2.bias - torch.Size([768]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.downsample.conv.weight - torch.Size([1536, 768, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.downsample.norm.1.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.2.downsample.norm.1.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.gamma1 - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.gamma2 - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.norm1.0.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.norm1.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.dcn.dw_conv.0.weight - torch.Size([1536, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.dcn.dw_conv.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.dcn.dw_conv.1.1.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.dcn.dw_conv.1.1.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.dcn.offset.weight - torch.Size([1728, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.dcn.offset.bias - torch.Size([1728]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.dcn.mask.weight - torch.Size([864, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.dcn.mask.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.dcn.input_proj.weight - torch.Size([1536, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.dcn.input_proj.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.dcn.output_proj.weight - torch.Size([1536, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.dcn.output_proj.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.norm2.0.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.norm2.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.mlp.fc1.weight - torch.Size([6144, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.mlp.fc1.bias - torch.Size([6144]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.mlp.fc2.weight - torch.Size([1536, 6144]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.0.mlp.fc2.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.gamma1 - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.gamma2 - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.norm1.0.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.norm1.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.dcn.dw_conv.0.weight - torch.Size([1536, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.dcn.dw_conv.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.dcn.dw_conv.1.1.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.dcn.dw_conv.1.1.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.dcn.offset.weight - torch.Size([1728, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.dcn.offset.bias - torch.Size([1728]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.dcn.mask.weight - torch.Size([864, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.dcn.mask.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.dcn.input_proj.weight - torch.Size([1536, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.dcn.input_proj.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.dcn.output_proj.weight - torch.Size([1536, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.dcn.output_proj.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.norm2.0.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.norm2.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.mlp.fc1.weight - torch.Size([6144, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.mlp.fc1.bias - torch.Size([6144]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.mlp.fc2.weight - torch.Size([1536, 6144]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.1.mlp.fc2.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.gamma1 - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.gamma2 - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.norm1.0.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.norm1.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.dcn.dw_conv.0.weight - torch.Size([1536, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.dcn.dw_conv.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.dcn.dw_conv.1.1.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.dcn.dw_conv.1.1.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.dcn.offset.weight - torch.Size([1728, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.dcn.offset.bias - torch.Size([1728]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.dcn.mask.weight - torch.Size([864, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.dcn.mask.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.dcn.input_proj.weight - torch.Size([1536, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.dcn.input_proj.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.dcn.output_proj.weight - torch.Size([1536, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.dcn.output_proj.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.norm2.0.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.norm2.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.mlp.fc1.weight - torch.Size([6144, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.mlp.fc1.bias - torch.Size([6144]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.mlp.fc2.weight - torch.Size([1536, 6144]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.2.mlp.fc2.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.gamma1 - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.gamma2 - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.norm1.0.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.norm1.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.dcn.dw_conv.0.weight - torch.Size([1536, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.dcn.dw_conv.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.dcn.dw_conv.1.1.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.dcn.dw_conv.1.1.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.dcn.offset.weight - torch.Size([1728, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.dcn.offset.bias - torch.Size([1728]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.dcn.mask.weight - torch.Size([864, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.dcn.mask.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.dcn.input_proj.weight - torch.Size([1536, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.dcn.input_proj.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.dcn.output_proj.weight - torch.Size([1536, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.dcn.output_proj.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.norm2.0.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.norm2.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.mlp.fc1.weight - torch.Size([6144, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.mlp.fc1.bias - torch.Size([6144]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.mlp.fc2.weight - torch.Size([1536, 6144]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.3.mlp.fc2.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.gamma1 - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.gamma2 - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.norm1.0.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.norm1.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.dcn.dw_conv.0.weight - torch.Size([1536, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.dcn.dw_conv.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.dcn.dw_conv.1.1.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.dcn.dw_conv.1.1.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.dcn.offset.weight - torch.Size([1728, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.dcn.offset.bias - torch.Size([1728]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.dcn.mask.weight - torch.Size([864, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.dcn.mask.bias - torch.Size([864]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.dcn.input_proj.weight - torch.Size([1536, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.dcn.input_proj.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.dcn.output_proj.weight - torch.Size([1536, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.dcn.output_proj.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.norm2.0.weight - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.norm2.0.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.mlp.fc1.weight - torch.Size([6144, 1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.mlp.fc1.bias - torch.Size([6144]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.mlp.fc2.weight - torch.Size([1536, 6144]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+backbone.levels.3.blocks.4.mlp.fc2.bias - torch.Size([1536]): 
+Initialized by user-defined `init_weights` in InternImage  
+
+decode_head.conv_seg.weight - torch.Size([2, 64, 1, 1]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+decode_head.conv_seg.bias - torch.Size([2]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+decode_head.blocks.0.conv1.0.weight - torch.Size([512, 2304, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.0.conv1.1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.0.conv1.1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.0.conv2.0.weight - torch.Size([512, 512, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.0.conv2.1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.0.conv2.1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.1.conv1.0.weight - torch.Size([256, 896, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.1.conv1.1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.1.conv1.1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.1.conv2.0.weight - torch.Size([256, 256, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.1.conv2.1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.1.conv2.1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.2.conv1.0.weight - torch.Size([128, 448, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.2.conv1.1.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.2.conv1.1.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.2.conv2.0.weight - torch.Size([128, 128, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.2.conv2.1.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.2.conv2.1.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.3.conv1.0.weight - torch.Size([64, 128, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.3.conv1.1.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.3.conv1.1.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.3.conv2.0.weight - torch.Size([64, 64, 3, 3]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.3.conv2.1.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+
+decode_head.blocks.3.conv2.1.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SiamEncoderDecoder  
+2024/01/30 21:31:00 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+2024/01/30 21:31:00 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+2024/01/30 21:31:00 - mmengine - INFO - Checkpoints will be saved to /work/share/achk2o1zg1/diwang22/work_dir/multitask_pretrain/finetune/Change_Detection/oscd_rgb/intern-xl-unet-96-imp-mtp_oscd_rgb.
+2024/01/30 21:31:27 - mmengine - INFO - Epoch(train)   [1][10/26]  base_lr: 1.3954e-06 lr: 1.3954e-06  eta: 1:55:00  time: 2.6643  data_time: 0.0813  memory: 13291  loss: 0.6752  decode.loss_ce: 0.6752  decode.acc_seg: 46.0979
+2024/01/30 21:31:43 - mmengine - INFO - Epoch(train)   [1][20/26]  base_lr: 2.9458e-06 lr: 2.9458e-06  eta: 1:30:39  time: 2.1082  data_time: 0.0438  memory: 13289  loss: 0.6739  decode.loss_ce: 0.6739  decode.acc_seg: 55.4002
+2024/01/30 21:31:52 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:32:08 - mmengine - INFO - Epoch(train)   [2][10/26]  base_lr: 5.4264e-06 lr: 5.4264e-06  eta: 1:19:49  time: 1.8679  data_time: 0.0310  memory: 13289  loss: 0.6659  decode.loss_ce: 0.6659  decode.acc_seg: 67.3472
+2024/01/30 21:32:23 - mmengine - INFO - Epoch(train)   [2][20/26]  base_lr: 6.9768e-06 lr: 6.9768e-06  eta: 1:16:31  time: 1.7976  data_time: 0.0257  memory: 13289  loss: 0.6666  decode.loss_ce: 0.6666  decode.acc_seg: 66.1784
+2024/01/30 21:32:32 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:32:48 - mmengine - INFO - Epoch(train)   [3][10/26]  base_lr: 9.4574e-06 lr: 9.4574e-06  eta: 1:13:29  time: 1.5596  data_time: 0.0126  memory: 13289  loss: 0.6646  decode.loss_ce: 0.6646  decode.acc_seg: 62.1065
+2024/01/30 21:33:04 - mmengine - INFO - Epoch(train)   [3][20/26]  base_lr: 1.1008e-05 lr: 1.1008e-05  eta: 1:12:09  time: 1.5607  data_time: 0.0125  memory: 13289  loss: 0.6589  decode.loss_ce: 0.6589  decode.acc_seg: 81.0859
+2024/01/30 21:33:13 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:33:29 - mmengine - INFO - Epoch(train)   [4][10/26]  base_lr: 1.3488e-05 lr: 1.3488e-05  eta: 1:10:38  time: 1.5628  data_time: 0.0124  memory: 13289  loss: 0.6510  decode.loss_ce: 0.6510  decode.acc_seg: 95.0130
+2024/01/30 21:33:44 - mmengine - INFO - Epoch(train)   [4][20/26]  base_lr: 1.5039e-05 lr: 1.5039e-05  eta: 1:09:47  time: 1.5649  data_time: 0.0122  memory: 13289  loss: 0.6411  decode.loss_ce: 0.6411  decode.acc_seg: 96.0523
+2024/01/30 21:33:54 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:34:10 - mmengine - INFO - Epoch(train)   [5][10/26]  base_lr: 1.7519e-05 lr: 1.7519e-05  eta: 1:08:45  time: 1.5671  data_time: 0.0099  memory: 13289  loss: 0.6245  decode.loss_ce: 0.6245  decode.acc_seg: 93.7305
+2024/01/30 21:34:25 - mmengine - INFO - Epoch(train)   [5][20/26]  base_lr: 1.9070e-05 lr: 1.9070e-05  eta: 1:08:08  time: 1.5668  data_time: 0.0098  memory: 13289  loss: 0.6160  decode.loss_ce: 0.6160  decode.acc_seg: 95.6889
+2024/01/30 21:34:35 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:34:50 - mmengine - INFO - Epoch(train)   [6][10/26]  base_lr: 2.0000e-05 lr: 2.0000e-05  eta: 1:07:18  time: 1.5645  data_time: 0.0080  memory: 13289  loss: 0.6036  decode.loss_ce: 0.6036  decode.acc_seg: 98.4750
+2024/01/30 21:35:06 - mmengine - INFO - Epoch(train)   [6][20/26]  base_lr: 2.0000e-05 lr: 2.0000e-05  eta: 1:06:47  time: 1.5650  data_time: 0.0079  memory: 13289  loss: 0.5935  decode.loss_ce: 0.5935  decode.acc_seg: 96.8932
+2024/01/30 21:35:15 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:35:31 - mmengine - INFO - Epoch(train)   [7][10/26]  base_lr: 1.9995e-05 lr: 1.9995e-05  eta: 1:06:05  time: 1.5633  data_time: 0.0088  memory: 13289  loss: 0.5821  decode.loss_ce: 0.5821  decode.acc_seg: 96.8316
+2024/01/30 21:35:47 - mmengine - INFO - Epoch(train)   [7][20/26]  base_lr: 1.9995e-05 lr: 1.9995e-05  eta: 1:05:39  time: 1.5636  data_time: 0.0086  memory: 13289  loss: 0.5753  decode.loss_ce: 0.5753  decode.acc_seg: 90.8264
+2024/01/30 21:35:56 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:36:12 - mmengine - INFO - Epoch(train)   [8][10/26]  base_lr: 1.9978e-05 lr: 1.9978e-05  eta: 1:05:02  time: 1.5653  data_time: 0.0099  memory: 13289  loss: 0.5647  decode.loss_ce: 0.5647  decode.acc_seg: 96.5138
+2024/01/30 21:36:27 - mmengine - INFO - Epoch(train)   [8][20/26]  base_lr: 1.9978e-05 lr: 1.9978e-05  eta: 1:04:39  time: 1.5659  data_time: 0.0110  memory: 13289  loss: 0.5572  decode.loss_ce: 0.5572  decode.acc_seg: 98.1293
+2024/01/30 21:36:37 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:36:52 - mmengine - INFO - Epoch(train)   [9][10/26]  base_lr: 1.9951e-05 lr: 1.9951e-05  eta: 1:04:04  time: 1.5653  data_time: 0.0106  memory: 13289  loss: 0.5504  decode.loss_ce: 0.5504  decode.acc_seg: 97.9230
+2024/01/30 21:37:08 - mmengine - INFO - Epoch(train)   [9][20/26]  base_lr: 1.9951e-05 lr: 1.9951e-05  eta: 1:03:41  time: 1.5640  data_time: 0.0108  memory: 13289  loss: 0.5445  decode.loss_ce: 0.5445  decode.acc_seg: 97.8693
+2024/01/30 21:37:17 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:37:33 - mmengine - INFO - Epoch(train)  [10][10/26]  base_lr: 1.9913e-05 lr: 1.9913e-05  eta: 1:03:08  time: 1.5611  data_time: 0.0098  memory: 13289  loss: 0.5361  decode.loss_ce: 0.5361  decode.acc_seg: 99.1035
+2024/01/30 21:37:48 - mmengine - INFO - Epoch(train)  [10][20/26]  base_lr: 1.9913e-05 lr: 1.9913e-05  eta: 1:02:47  time: 1.5604  data_time: 0.0091  memory: 13289  loss: 0.5354  decode.loss_ce: 0.5354  decode.acc_seg: 98.8659
+2024/01/30 21:37:58 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:37:58 - mmengine - INFO - Saving checkpoint at 10 epochs
+2024/01/30 21:38:21 - mmengine - INFO - Epoch(train)  [11][10/26]  base_lr: 1.9864e-05 lr: 1.9864e-05  eta: 1:02:25  time: 1.5813  data_time: 0.0258  memory: 13289  loss: 0.5278  decode.loss_ce: 0.5278  decode.acc_seg: 97.9952
+2024/01/30 21:38:37 - mmengine - INFO - Epoch(train)  [11][20/26]  base_lr: 1.9864e-05 lr: 1.9864e-05  eta: 1:02:05  time: 1.5822  data_time: 0.0259  memory: 13289  loss: 0.5252  decode.loss_ce: 0.5252  decode.acc_seg: 98.2263
+2024/01/30 21:38:46 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:39:02 - mmengine - INFO - Epoch(train)  [12][10/26]  base_lr: 1.9804e-05 lr: 1.9804e-05  eta: 1:01:34  time: 1.5842  data_time: 0.0287  memory: 13289  loss: 0.5172  decode.loss_ce: 0.5172  decode.acc_seg: 98.4528
+2024/01/30 21:39:18 - mmengine - INFO - Epoch(train)  [12][20/26]  base_lr: 1.9804e-05 lr: 1.9804e-05  eta: 1:01:14  time: 1.5811  data_time: 0.0284  memory: 13289  loss: 0.5143  decode.loss_ce: 0.5143  decode.acc_seg: 99.1695
+2024/01/30 21:39:27 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:39:42 - mmengine - INFO - Epoch(train)  [13][10/26]  base_lr: 1.9733e-05 lr: 1.9733e-05  eta: 1:00:43  time: 1.5568  data_time: 0.0112  memory: 13289  loss: 0.5083  decode.loss_ce: 0.5083  decode.acc_seg: 96.4490
+2024/01/30 21:39:58 - mmengine - INFO - Epoch(train)  [13][20/26]  base_lr: 1.9733e-05 lr: 1.9733e-05  eta: 1:00:23  time: 1.5554  data_time: 0.0114  memory: 13289  loss: 0.5054  decode.loss_ce: 0.5054  decode.acc_seg: 97.3182
+2024/01/30 21:40:07 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:40:23 - mmengine - INFO - Epoch(train)  [14][10/26]  base_lr: 1.9652e-05 lr: 1.9652e-05  eta: 0:59:54  time: 1.5545  data_time: 0.0099  memory: 13289  loss: 0.5018  decode.loss_ce: 0.5018  decode.acc_seg: 99.4683
+2024/01/30 21:40:38 - mmengine - INFO - Epoch(train)  [14][20/26]  base_lr: 1.9652e-05 lr: 1.9652e-05  eta: 0:59:36  time: 1.5575  data_time: 0.0098  memory: 13289  loss: 0.4974  decode.loss_ce: 0.4974  decode.acc_seg: 99.3852
+2024/01/30 21:40:48 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:41:03 - mmengine - INFO - Epoch(train)  [15][10/26]  base_lr: 1.9560e-05 lr: 1.9560e-05  eta: 0:59:07  time: 1.5595  data_time: 0.0103  memory: 13289  loss: 0.4895  decode.loss_ce: 0.4895  decode.acc_seg: 98.3255
+2024/01/30 21:41:19 - mmengine - INFO - Epoch(train)  [15][20/26]  base_lr: 1.9560e-05 lr: 1.9560e-05  eta: 0:58:50  time: 1.5622  data_time: 0.0101  memory: 13289  loss: 0.4856  decode.loss_ce: 0.4856  decode.acc_seg: 97.5205
+2024/01/30 21:41:29 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:41:44 - mmengine - INFO - Epoch(train)  [16][10/26]  base_lr: 1.9458e-05 lr: 1.9458e-05  eta: 0:58:22  time: 1.5654  data_time: 0.0093  memory: 13289  loss: 0.4789  decode.loss_ce: 0.4789  decode.acc_seg: 99.6647
+2024/01/30 21:42:04 - mmengine - INFO - Epoch(train)  [16][20/26]  base_lr: 1.9458e-05 lr: 1.9458e-05  eta: 0:58:25  time: 1.6424  data_time: 0.0093  memory: 13289  loss: 0.4756  decode.loss_ce: 0.4756  decode.acc_seg: 96.5034
+2024/01/30 21:42:13 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:42:29 - mmengine - INFO - Epoch(train)  [17][10/26]  base_lr: 1.9346e-05 lr: 1.9346e-05  eta: 0:57:56  time: 1.6430  data_time: 0.0090  memory: 13289  loss: 0.4727  decode.loss_ce: 0.4727  decode.acc_seg: 98.6196
+2024/01/30 21:42:44 - mmengine - INFO - Epoch(train)  [17][20/26]  base_lr: 1.9346e-05 lr: 1.9346e-05  eta: 0:57:39  time: 1.6423  data_time: 0.0090  memory: 13289  loss: 0.4704  decode.loss_ce: 0.4704  decode.acc_seg: 97.8618
+2024/01/30 21:42:54 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:43:10 - mmengine - INFO - Epoch(train)  [18][10/26]  base_lr: 1.9223e-05 lr: 1.9223e-05  eta: 0:57:12  time: 1.6445  data_time: 0.0098  memory: 13289  loss: 0.4651  decode.loss_ce: 0.4651  decode.acc_seg: 98.3211
+2024/01/30 21:43:25 - mmengine - INFO - Epoch(train)  [18][20/26]  base_lr: 1.9223e-05 lr: 1.9223e-05  eta: 0:56:54  time: 1.5682  data_time: 0.0096  memory: 13289  loss: 0.4615  decode.loss_ce: 0.4615  decode.acc_seg: 98.9325
+2024/01/30 21:43:35 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:43:50 - mmengine - INFO - Epoch(train)  [19][10/26]  base_lr: 1.9090e-05 lr: 1.9090e-05  eta: 0:56:26  time: 1.5690  data_time: 0.0098  memory: 13289  loss: 0.4548  decode.loss_ce: 0.4548  decode.acc_seg: 97.2134
+2024/01/30 21:44:06 - mmengine - INFO - Epoch(train)  [19][20/26]  base_lr: 1.9090e-05 lr: 1.9090e-05  eta: 0:56:09  time: 1.5677  data_time: 0.0106  memory: 13289  loss: 0.4498  decode.loss_ce: 0.4498  decode.acc_seg: 98.7213
+2024/01/30 21:44:15 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:44:31 - mmengine - INFO - Epoch(train)  [20][10/26]  base_lr: 1.8947e-05 lr: 1.8947e-05  eta: 0:55:41  time: 1.5620  data_time: 0.0101  memory: 13289  loss: 0.4467  decode.loss_ce: 0.4467  decode.acc_seg: 98.0379
+2024/01/30 21:44:46 - mmengine - INFO - Epoch(train)  [20][20/26]  base_lr: 1.8947e-05 lr: 1.8947e-05  eta: 0:55:23  time: 1.5588  data_time: 0.0100  memory: 13289  loss: 0.4438  decode.loss_ce: 0.4438  decode.acc_seg: 99.4237
+2024/01/30 21:44:56 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:44:56 - mmengine - INFO - Saving checkpoint at 20 epochs
+2024/01/30 21:45:06 - mmengine - INFO - Epoch(val)  [20][10/49]    eta: 0:00:15  time: 0.4075  data_time: 0.0892  memory: 13289  
+2024/01/30 21:45:07 - mmengine - INFO - Epoch(val)  [20][20/49]    eta: 0:00:08  time: 0.2820  data_time: 0.0668  memory: 6693  
+2024/01/30 21:45:09 - mmengine - INFO - Epoch(val)  [20][30/49]    eta: 0:00:04  time: 0.2402  data_time: 0.0593  memory: 6693  
+2024/01/30 21:45:10 - mmengine - INFO - Epoch(val)  [20][40/49]    eta: 0:00:01  time: 0.2191  data_time: 0.0554  memory: 6693  
+2024/01/30 21:45:12 - mmengine - INFO - per class results:
+2024/01/30 21:45:12 - mmengine - INFO - 
++-----------+--------+-----------+--------+------+-------+
+|   Class   | Fscore | Precision | Recall | IoU  |  Acc  |
++-----------+--------+-----------+--------+------+-------+
+| unchanged |  97.8  |    96.8   | 98.83  | 95.7 | 98.83 |
+|  changed  | 50.41  |   65.84   | 40.83  | 33.7 | 40.83 |
++-----------+--------+-----------+--------+------+-------+
+2024/01/30 21:45:12 - mmengine - INFO - Epoch(val) [20][49/49]    aAcc: 95.7900  mFscore: 74.1000  mPrecision: 81.3200  mRecall: 69.8300  mIoU: 64.7000  mAcc: 69.8300  data_time: 0.0528  time: 0.2071
+2024/01/30 21:45:15 - mmengine - INFO - The best checkpoint with 64.7000 mIoU at 20 epoch is saved to best_mIoU_epoch_20.pth.
+2024/01/30 21:45:38 - mmengine - INFO - Epoch(train)  [21][10/26]  base_lr: 1.8795e-05 lr: 1.8795e-05  eta: 0:54:57  time: 1.5677  data_time: 0.0159  memory: 13289  loss: 0.4428  decode.loss_ce: 0.4428  decode.acc_seg: 99.6029
+2024/01/30 21:45:54 - mmengine - INFO - Epoch(train)  [21][20/26]  base_lr: 1.8795e-05 lr: 1.8795e-05  eta: 0:54:40  time: 1.5665  data_time: 0.0154  memory: 13287  loss: 0.4378  decode.loss_ce: 0.4378  decode.acc_seg: 96.7122
+2024/01/30 21:46:03 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:46:19 - mmengine - INFO - Epoch(train)  [22][10/26]  base_lr: 1.8633e-05 lr: 1.8633e-05  eta: 0:54:13  time: 1.5674  data_time: 0.0156  memory: 13287  loss: 0.4315  decode.loss_ce: 0.4315  decode.acc_seg: 99.6456
+2024/01/30 21:46:35 - mmengine - INFO - Epoch(train)  [22][20/26]  base_lr: 1.8633e-05 lr: 1.8633e-05  eta: 0:53:55  time: 1.5706  data_time: 0.0168  memory: 13287  loss: 0.4275  decode.loss_ce: 0.4275  decode.acc_seg: 99.5419
+2024/01/30 21:46:44 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:47:00 - mmengine - INFO - Epoch(train)  [23][10/26]  base_lr: 1.8461e-05 lr: 1.8461e-05  eta: 0:53:29  time: 1.5605  data_time: 0.0114  memory: 13287  loss: 0.4196  decode.loss_ce: 0.4196  decode.acc_seg: 98.6798
+2024/01/30 21:47:15 - mmengine - INFO - Epoch(train)  [23][20/26]  base_lr: 1.8461e-05 lr: 1.8461e-05  eta: 0:53:12  time: 1.5614  data_time: 0.0123  memory: 13287  loss: 0.4165  decode.loss_ce: 0.4165  decode.acc_seg: 97.9358
+2024/01/30 21:47:25 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:47:40 - mmengine - INFO - Epoch(train)  [24][10/26]  base_lr: 1.8280e-05 lr: 1.8280e-05  eta: 0:52:45  time: 1.5641  data_time: 0.0136  memory: 13287  loss: 0.4116  decode.loss_ce: 0.4116  decode.acc_seg: 97.3920
+2024/01/30 21:47:56 - mmengine - INFO - Epoch(train)  [24][20/26]  base_lr: 1.8280e-05 lr: 1.8280e-05  eta: 0:52:28  time: 1.5643  data_time: 0.0134  memory: 13287  loss: 0.4094  decode.loss_ce: 0.4094  decode.acc_seg: 99.2759
+2024/01/30 21:48:05 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:48:21 - mmengine - INFO - Epoch(train)  [25][10/26]  base_lr: 1.8090e-05 lr: 1.8090e-05  eta: 0:52:02  time: 1.5643  data_time: 0.0130  memory: 13287  loss: 0.4067  decode.loss_ce: 0.4067  decode.acc_seg: 99.4771
+2024/01/30 21:48:36 - mmengine - INFO - Epoch(train)  [25][20/26]  base_lr: 1.8090e-05 lr: 1.8090e-05  eta: 0:51:45  time: 1.5635  data_time: 0.0122  memory: 13287  loss: 0.4043  decode.loss_ce: 0.4043  decode.acc_seg: 99.8701
+2024/01/30 21:48:46 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:49:02 - mmengine - INFO - Epoch(train)  [26][10/26]  base_lr: 1.7891e-05 lr: 1.7891e-05  eta: 0:51:18  time: 1.5616  data_time: 0.0104  memory: 13287  loss: 0.4020  decode.loss_ce: 0.4020  decode.acc_seg: 98.5151
+2024/01/30 21:49:17 - mmengine - INFO - Epoch(train)  [26][20/26]  base_lr: 1.7891e-05 lr: 1.7891e-05  eta: 0:51:01  time: 1.5589  data_time: 0.0096  memory: 13287  loss: 0.3985  decode.loss_ce: 0.3985  decode.acc_seg: 99.4555
+2024/01/30 21:49:26 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:49:42 - mmengine - INFO - Epoch(train)  [27][10/26]  base_lr: 1.7684e-05 lr: 1.7684e-05  eta: 0:50:34  time: 1.5563  data_time: 0.0095  memory: 13287  loss: 0.3957  decode.loss_ce: 0.3957  decode.acc_seg: 99.0111
+2024/01/30 21:49:57 - mmengine - INFO - Epoch(train)  [27][20/26]  base_lr: 1.7684e-05 lr: 1.7684e-05  eta: 0:50:18  time: 1.5548  data_time: 0.0096  memory: 13287  loss: 0.3924  decode.loss_ce: 0.3924  decode.acc_seg: 98.2274
+2024/01/30 21:50:07 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:50:22 - mmengine - INFO - Epoch(train)  [28][10/26]  base_lr: 1.7468e-05 lr: 1.7468e-05  eta: 0:49:51  time: 1.5516  data_time: 0.0102  memory: 13287  loss: 0.3904  decode.loss_ce: 0.3904  decode.acc_seg: 99.7125
+2024/01/30 21:50:38 - mmengine - INFO - Epoch(train)  [28][20/26]  base_lr: 1.7468e-05 lr: 1.7468e-05  eta: 0:49:34  time: 1.5534  data_time: 0.0103  memory: 13287  loss: 0.3904  decode.loss_ce: 0.3904  decode.acc_seg: 99.5474
+2024/01/30 21:50:47 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:51:03 - mmengine - INFO - Epoch(train)  [29][10/26]  base_lr: 1.7244e-05 lr: 1.7244e-05  eta: 0:49:08  time: 1.5551  data_time: 0.0109  memory: 13287  loss: 0.3854  decode.loss_ce: 0.3854  decode.acc_seg: 99.7634
+2024/01/30 21:51:18 - mmengine - INFO - Epoch(train)  [29][20/26]  base_lr: 1.7244e-05 lr: 1.7244e-05  eta: 0:48:51  time: 1.5575  data_time: 0.0116  memory: 13287  loss: 0.3835  decode.loss_ce: 0.3835  decode.acc_seg: 97.3741
+2024/01/30 21:51:28 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:51:43 - mmengine - INFO - Epoch(train)  [30][10/26]  base_lr: 1.7012e-05 lr: 1.7012e-05  eta: 0:48:25  time: 1.5609  data_time: 0.0132  memory: 13287  loss: 0.3770  decode.loss_ce: 0.3770  decode.acc_seg: 98.9450
+2024/01/30 21:51:59 - mmengine - INFO - Epoch(train)  [30][20/26]  base_lr: 1.7012e-05 lr: 1.7012e-05  eta: 0:48:09  time: 1.5612  data_time: 0.0139  memory: 13287  loss: 0.3763  decode.loss_ce: 0.3763  decode.acc_seg: 99.4086
+2024/01/30 21:52:08 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:52:08 - mmengine - INFO - Saving checkpoint at 30 epochs
+2024/01/30 21:52:36 - mmengine - INFO - Epoch(train)  [31][10/26]  base_lr: 1.6773e-05 lr: 1.6773e-05  eta: 0:47:45  time: 1.5813  data_time: 0.0279  memory: 13287  loss: 0.3725  decode.loss_ce: 0.3725  decode.acc_seg: 99.4395
+2024/01/30 21:52:51 - mmengine - INFO - Epoch(train)  [31][20/26]  base_lr: 1.6773e-05 lr: 1.6773e-05  eta: 0:47:29  time: 1.5790  data_time: 0.0273  memory: 13287  loss: 0.3697  decode.loss_ce: 0.3697  decode.acc_seg: 99.1133
+2024/01/30 21:53:00 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:53:16 - mmengine - INFO - Epoch(train)  [32][10/26]  base_lr: 1.6526e-05 lr: 1.6526e-05  eta: 0:47:03  time: 1.5791  data_time: 0.0265  memory: 13287  loss: 0.3652  decode.loss_ce: 0.3652  decode.acc_seg: 97.9137
+2024/01/30 21:53:35 - mmengine - INFO - Epoch(train)  [32][20/26]  base_lr: 1.6526e-05 lr: 1.6526e-05  eta: 0:46:55  time: 1.6572  data_time: 0.0264  memory: 13287  loss: 0.3620  decode.loss_ce: 0.3620  decode.acc_seg: 99.3805
+2024/01/30 21:53:45 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:54:00 - mmengine - INFO - Epoch(train)  [33][10/26]  base_lr: 1.6272e-05 lr: 1.6272e-05  eta: 0:46:28  time: 1.6355  data_time: 0.0103  memory: 13287  loss: 0.3598  decode.loss_ce: 0.3598  decode.acc_seg: 96.6541
+2024/01/30 21:54:16 - mmengine - INFO - Epoch(train)  [33][20/26]  base_lr: 1.6272e-05 lr: 1.6272e-05  eta: 0:46:12  time: 1.6359  data_time: 0.0104  memory: 13287  loss: 0.3587  decode.loss_ce: 0.3587  decode.acc_seg: 99.5241
+2024/01/30 21:54:25 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:54:41 - mmengine - INFO - Epoch(train)  [34][10/26]  base_lr: 1.6011e-05 lr: 1.6011e-05  eta: 0:45:46  time: 1.6387  data_time: 0.0088  memory: 13287  loss: 0.3576  decode.loss_ce: 0.3576  decode.acc_seg: 99.4950
+2024/01/30 21:54:57 - mmengine - INFO - Epoch(train)  [34][20/26]  base_lr: 1.6011e-05 lr: 1.6011e-05  eta: 0:45:29  time: 1.5605  data_time: 0.0080  memory: 13287  loss: 0.3539  decode.loss_ce: 0.3539  decode.acc_seg: 99.2383
+2024/01/30 21:55:06 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:55:22 - mmengine - INFO - Epoch(train)  [35][10/26]  base_lr: 1.5743e-05 lr: 1.5743e-05  eta: 0:45:03  time: 1.5626  data_time: 0.0083  memory: 13287  loss: 0.3494  decode.loss_ce: 0.3494  decode.acc_seg: 97.5632
+2024/01/30 21:55:37 - mmengine - INFO - Epoch(train)  [35][20/26]  base_lr: 1.5743e-05 lr: 1.5743e-05  eta: 0:44:47  time: 1.5695  data_time: 0.0083  memory: 13287  loss: 0.3488  decode.loss_ce: 0.3488  decode.acc_seg: 98.9305
+2024/01/30 21:55:47 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:56:03 - mmengine - INFO - Epoch(train)  [36][10/26]  base_lr: 1.5469e-05 lr: 1.5469e-05  eta: 0:44:22  time: 1.5685  data_time: 0.0087  memory: 13287  loss: 0.3466  decode.loss_ce: 0.3466  decode.acc_seg: 99.0669
+2024/01/30 21:56:18 - mmengine - INFO - Epoch(train)  [36][20/26]  base_lr: 1.5469e-05 lr: 1.5469e-05  eta: 0:44:05  time: 1.5669  data_time: 0.0086  memory: 13287  loss: 0.3457  decode.loss_ce: 0.3457  decode.acc_seg: 97.9698
+2024/01/30 21:56:27 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:56:43 - mmengine - INFO - Epoch(train)  [37][10/26]  base_lr: 1.5190e-05 lr: 1.5190e-05  eta: 0:43:39  time: 1.5626  data_time: 0.0087  memory: 13287  loss: 0.3429  decode.loss_ce: 0.3429  decode.acc_seg: 99.5344
+2024/01/30 21:56:58 - mmengine - INFO - Epoch(train)  [37][20/26]  base_lr: 1.5190e-05 lr: 1.5190e-05  eta: 0:43:23  time: 1.5594  data_time: 0.0086  memory: 13287  loss: 0.3401  decode.loss_ce: 0.3401  decode.acc_seg: 96.8694
+2024/01/30 21:57:08 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:57:24 - mmengine - INFO - Epoch(train)  [38][10/26]  base_lr: 1.4904e-05 lr: 1.4904e-05  eta: 0:42:57  time: 1.5556  data_time: 0.0082  memory: 13287  loss: 0.3370  decode.loss_ce: 0.3370  decode.acc_seg: 97.9786
+2024/01/30 21:57:39 - mmengine - INFO - Epoch(train)  [38][20/26]  base_lr: 1.4904e-05 lr: 1.4904e-05  eta: 0:42:41  time: 1.5586  data_time: 0.0082  memory: 13287  loss: 0.3345  decode.loss_ce: 0.3345  decode.acc_seg: 99.6294
+2024/01/30 21:57:48 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:58:04 - mmengine - INFO - Epoch(train)  [39][10/26]  base_lr: 1.4613e-05 lr: 1.4613e-05  eta: 0:42:15  time: 1.5607  data_time: 0.0084  memory: 13287  loss: 0.3311  decode.loss_ce: 0.3311  decode.acc_seg: 97.1434
+2024/01/30 21:58:07 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:58:20 - mmengine - INFO - Epoch(train)  [39][20/26]  base_lr: 1.4613e-05 lr: 1.4613e-05  eta: 0:41:58  time: 1.5606  data_time: 0.0084  memory: 13287  loss: 0.3290  decode.loss_ce: 0.3290  decode.acc_seg: 98.1676
+2024/01/30 21:58:29 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:58:45 - mmengine - INFO - Epoch(train)  [40][10/26]  base_lr: 1.4318e-05 lr: 1.4318e-05  eta: 0:41:33  time: 1.5618  data_time: 0.0089  memory: 13287  loss: 0.3243  decode.loss_ce: 0.3243  decode.acc_seg: 98.2654
+2024/01/30 21:59:00 - mmengine - INFO - Epoch(train)  [40][20/26]  base_lr: 1.4318e-05 lr: 1.4318e-05  eta: 0:41:17  time: 1.5620  data_time: 0.0089  memory: 13287  loss: 0.3238  decode.loss_ce: 0.3238  decode.acc_seg: 98.5183
+2024/01/30 21:59:10 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 21:59:10 - mmengine - INFO - Saving checkpoint at 40 epochs
+2024/01/30 21:59:18 - mmengine - INFO - Epoch(val)  [40][10/49]    eta: 0:00:08  time: 0.1663  data_time: 0.0536  memory: 13287  
+2024/01/30 21:59:20 - mmengine - INFO - Epoch(val)  [40][20/49]    eta: 0:00:05  time: 0.1672  data_time: 0.0542  memory: 6693  
+2024/01/30 21:59:21 - mmengine - INFO - Epoch(val)  [40][30/49]    eta: 0:00:03  time: 0.1671  data_time: 0.0541  memory: 6693  
+2024/01/30 21:59:23 - mmengine - INFO - Epoch(val)  [40][40/49]    eta: 0:00:01  time: 0.1673  data_time: 0.0543  memory: 6693  
+2024/01/30 21:59:24 - mmengine - INFO - per class results:
+2024/01/30 21:59:24 - mmengine - INFO - 
++-----------+--------+-----------+--------+-------+-------+
+|   Class   | Fscore | Precision | Recall |  IoU  |  Acc  |
++-----------+--------+-----------+--------+-------+-------+
+| unchanged | 97.88  |    97.4   | 98.37  | 95.85 | 98.37 |
+|  changed  | 57.73  |   64.04   | 52.55  | 40.58 | 52.55 |
++-----------+--------+-----------+--------+-------+-------+
+2024/01/30 21:59:24 - mmengine - INFO - Epoch(val) [40][49/49]    aAcc: 95.9700  mFscore: 77.8100  mPrecision: 80.7200  mRecall: 75.4600  mIoU: 68.2200  mAcc: 75.4600  data_time: 0.0546  time: 0.1676
+2024/01/30 21:59:24 - mmengine - INFO - The previous best checkpoint /work/share/achk2o1zg1/diwang22/work_dir/multitask_pretrain/finetune/Change_Detection/oscd_rgb/intern-xl-unet-96-imp-mtp_oscd_rgb/best_mIoU_epoch_20.pth is removed
+2024/01/30 21:59:29 - mmengine - INFO - The best checkpoint with 68.2200 mIoU at 40 epoch is saved to best_mIoU_epoch_40.pth.
+2024/01/30 21:59:52 - mmengine - INFO - Epoch(train)  [41][10/26]  base_lr: 1.4017e-05 lr: 1.4017e-05  eta: 0:40:52  time: 1.5739  data_time: 0.0166  memory: 13287  loss: 0.3230  decode.loss_ce: 0.3230  decode.acc_seg: 98.0704
+2024/01/30 22:00:07 - mmengine - INFO - Epoch(train)  [41][20/26]  base_lr: 1.4017e-05 lr: 1.4017e-05  eta: 0:40:35  time: 1.5735  data_time: 0.0168  memory: 13287  loss: 0.3223  decode.loss_ce: 0.3223  decode.acc_seg: 99.1760
+2024/01/30 22:00:16 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:00:32 - mmengine - INFO - Epoch(train)  [42][10/26]  base_lr: 1.3712e-05 lr: 1.3712e-05  eta: 0:40:10  time: 1.5721  data_time: 0.0175  memory: 13287  loss: 0.3222  decode.loss_ce: 0.3222  decode.acc_seg: 98.7188
+2024/01/30 22:00:48 - mmengine - INFO - Epoch(train)  [42][20/26]  base_lr: 1.3712e-05 lr: 1.3712e-05  eta: 0:39:54  time: 1.5728  data_time: 0.0184  memory: 13287  loss: 0.3194  decode.loss_ce: 0.3194  decode.acc_seg: 99.2931
+2024/01/30 22:00:57 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:01:13 - mmengine - INFO - Epoch(train)  [43][10/26]  base_lr: 1.3403e-05 lr: 1.3403e-05  eta: 0:39:28  time: 1.5607  data_time: 0.0112  memory: 13287  loss: 0.3140  decode.loss_ce: 0.3140  decode.acc_seg: 99.5148
+2024/01/30 22:01:28 - mmengine - INFO - Epoch(train)  [43][20/26]  base_lr: 1.3403e-05 lr: 1.3403e-05  eta: 0:39:12  time: 1.5607  data_time: 0.0122  memory: 13287  loss: 0.3117  decode.loss_ce: 0.3117  decode.acc_seg: 98.4183
+2024/01/30 22:01:38 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:01:53 - mmengine - INFO - Epoch(train)  [44][10/26]  base_lr: 1.3090e-05 lr: 1.3090e-05  eta: 0:38:46  time: 1.5614  data_time: 0.0121  memory: 13287  loss: 0.3079  decode.loss_ce: 0.3079  decode.acc_seg: 99.3818
+2024/01/30 22:02:09 - mmengine - INFO - Epoch(train)  [44][20/26]  base_lr: 1.3090e-05 lr: 1.3090e-05  eta: 0:38:30  time: 1.5615  data_time: 0.0119  memory: 13287  loss: 0.3062  decode.loss_ce: 0.3062  decode.acc_seg: 99.5686
+2024/01/30 22:02:18 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:02:34 - mmengine - INFO - Epoch(train)  [45][10/26]  base_lr: 1.2774e-05 lr: 1.2774e-05  eta: 0:38:04  time: 1.5624  data_time: 0.0118  memory: 13287  loss: 0.3043  decode.loss_ce: 0.3043  decode.acc_seg: 99.4244
+2024/01/30 22:02:50 - mmengine - INFO - Epoch(train)  [45][20/26]  base_lr: 1.2774e-05 lr: 1.2774e-05  eta: 0:37:48  time: 1.5623  data_time: 0.0110  memory: 13287  loss: 0.3041  decode.loss_ce: 0.3041  decode.acc_seg: 97.0057
+2024/01/30 22:02:59 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:03:15 - mmengine - INFO - Epoch(train)  [46][10/26]  base_lr: 1.2455e-05 lr: 1.2455e-05  eta: 0:37:23  time: 1.5621  data_time: 0.0095  memory: 13287  loss: 0.3035  decode.loss_ce: 0.3035  decode.acc_seg: 98.2082
+2024/01/30 22:03:30 - mmengine - INFO - Epoch(train)  [46][20/26]  base_lr: 1.2455e-05 lr: 1.2455e-05  eta: 0:37:07  time: 1.5604  data_time: 0.0087  memory: 13287  loss: 0.3064  decode.loss_ce: 0.3064  decode.acc_seg: 99.0942
+2024/01/30 22:03:39 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:03:55 - mmengine - INFO - Epoch(train)  [47][10/26]  base_lr: 1.2133e-05 lr: 1.2133e-05  eta: 0:36:41  time: 1.5607  data_time: 0.0078  memory: 13287  loss: 0.3049  decode.loss_ce: 0.3049  decode.acc_seg: 99.4783
+2024/01/30 22:04:11 - mmengine - INFO - Epoch(train)  [47][20/26]  base_lr: 1.2133e-05 lr: 1.2133e-05  eta: 0:36:25  time: 1.5606  data_time: 0.0079  memory: 13287  loss: 0.3016  decode.loss_ce: 0.3016  decode.acc_seg: 99.9142
+2024/01/30 22:04:20 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:04:36 - mmengine - INFO - Epoch(train)  [48][10/26]  base_lr: 1.1809e-05 lr: 1.1809e-05  eta: 0:35:59  time: 1.5586  data_time: 0.0085  memory: 13287  loss: 0.2984  decode.loss_ce: 0.2984  decode.acc_seg: 98.3468
+2024/01/30 22:04:55 - mmengine - INFO - Epoch(train)  [48][20/26]  base_lr: 1.1809e-05 lr: 1.1809e-05  eta: 0:35:48  time: 1.6363  data_time: 0.0084  memory: 13287  loss: 0.2934  decode.loss_ce: 0.2934  decode.acc_seg: 99.2224
+2024/01/30 22:05:04 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:05:20 - mmengine - INFO - Epoch(train)  [49][10/26]  base_lr: 1.1483e-05 lr: 1.1483e-05  eta: 0:35:22  time: 1.6340  data_time: 0.0083  memory: 13287  loss: 0.2930  decode.loss_ce: 0.2930  decode.acc_seg: 98.8476
+2024/01/30 22:05:35 - mmengine - INFO - Epoch(train)  [49][20/26]  base_lr: 1.1483e-05 lr: 1.1483e-05  eta: 0:35:06  time: 1.6336  data_time: 0.0085  memory: 13287  loss: 0.2931  decode.loss_ce: 0.2931  decode.acc_seg: 98.7195
+2024/01/30 22:05:45 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:06:01 - mmengine - INFO - Epoch(train)  [50][10/26]  base_lr: 1.1155e-05 lr: 1.1155e-05  eta: 0:34:40  time: 1.6349  data_time: 0.0086  memory: 13287  loss: 0.2904  decode.loss_ce: 0.2904  decode.acc_seg: 99.5317
+2024/01/30 22:06:16 - mmengine - INFO - Epoch(train)  [50][20/26]  base_lr: 1.1155e-05 lr: 1.1155e-05  eta: 0:34:24  time: 1.5610  data_time: 0.0088  memory: 13287  loss: 0.2901  decode.loss_ce: 0.2901  decode.acc_seg: 98.7128
+2024/01/30 22:06:26 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:06:26 - mmengine - INFO - Saving checkpoint at 50 epochs
+2024/01/30 22:06:49 - mmengine - INFO - Epoch(train)  [51][10/26]  base_lr: 1.0826e-05 lr: 1.0826e-05  eta: 0:34:00  time: 1.5878  data_time: 0.0266  memory: 13287  loss: 0.2878  decode.loss_ce: 0.2878  decode.acc_seg: 99.1104
+2024/01/30 22:07:04 - mmengine - INFO - Epoch(train)  [51][20/26]  base_lr: 1.0826e-05 lr: 1.0826e-05  eta: 0:33:44  time: 1.5886  data_time: 0.0265  memory: 13287  loss: 0.2867  decode.loss_ce: 0.2867  decode.acc_seg: 99.1283
+2024/01/30 22:07:14 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:07:29 - mmengine - INFO - Epoch(train)  [52][10/26]  base_lr: 1.0496e-05 lr: 1.0496e-05  eta: 0:33:18  time: 1.5891  data_time: 0.0277  memory: 13287  loss: 0.2885  decode.loss_ce: 0.2885  decode.acc_seg: 96.2872
+2024/01/30 22:07:45 - mmengine - INFO - Epoch(train)  [52][20/26]  base_lr: 1.0496e-05 lr: 1.0496e-05  eta: 0:33:02  time: 1.5874  data_time: 0.0279  memory: 13287  loss: 0.2885  decode.loss_ce: 0.2885  decode.acc_seg: 99.4005
+2024/01/30 22:07:54 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:08:13 - mmengine - INFO - Epoch(train)  [53][10/26]  base_lr: 1.0165e-05 lr: 1.0165e-05  eta: 0:32:40  time: 1.6248  data_time: 0.0117  memory: 13287  loss: 0.2865  decode.loss_ce: 0.2865  decode.acc_seg: 99.8519
+2024/01/30 22:08:29 - mmengine - INFO - Epoch(train)  [53][20/26]  base_lr: 1.0165e-05 lr: 1.0165e-05  eta: 0:32:23  time: 1.6239  data_time: 0.0126  memory: 13287  loss: 0.2854  decode.loss_ce: 0.2854  decode.acc_seg: 98.8029
+2024/01/30 22:08:38 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:08:54 - mmengine - INFO - Epoch(train)  [54][10/26]  base_lr: 9.8347e-06 lr: 9.8347e-06  eta: 0:31:58  time: 1.6237  data_time: 0.0137  memory: 13287  loss: 0.2791  decode.loss_ce: 0.2791  decode.acc_seg: 98.7448
+2024/01/30 22:09:09 - mmengine - INFO - Epoch(train)  [54][20/26]  base_lr: 9.8347e-06 lr: 9.8347e-06  eta: 0:31:42  time: 1.6237  data_time: 0.0137  memory: 13287  loss: 0.2779  decode.loss_ce: 0.2779  decode.acc_seg: 99.0936
+2024/01/30 22:09:19 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:09:34 - mmengine - INFO - Epoch(train)  [55][10/26]  base_lr: 9.5042e-06 lr: 9.5042e-06  eta: 0:31:16  time: 1.5623  data_time: 0.0136  memory: 13287  loss: 0.2760  decode.loss_ce: 0.2760  decode.acc_seg: 99.0343
+2024/01/30 22:09:50 - mmengine - INFO - Epoch(train)  [55][20/26]  base_lr: 9.5042e-06 lr: 9.5042e-06  eta: 0:31:00  time: 1.5628  data_time: 0.0133  memory: 13287  loss: 0.2758  decode.loss_ce: 0.2758  decode.acc_seg: 99.8251
+2024/01/30 22:09:59 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:10:15 - mmengine - INFO - Epoch(train)  [56][10/26]  base_lr: 9.1742e-06 lr: 9.1742e-06  eta: 0:30:35  time: 1.5618  data_time: 0.0117  memory: 13287  loss: 0.2759  decode.loss_ce: 0.2759  decode.acc_seg: 99.8911
+2024/01/30 22:10:31 - mmengine - INFO - Epoch(train)  [56][20/26]  base_lr: 9.1742e-06 lr: 9.1742e-06  eta: 0:30:19  time: 1.5612  data_time: 0.0109  memory: 13287  loss: 0.2753  decode.loss_ce: 0.2753  decode.acc_seg: 99.3696
+2024/01/30 22:10:40 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:10:56 - mmengine - INFO - Epoch(train)  [57][10/26]  base_lr: 8.8452e-06 lr: 8.8452e-06  eta: 0:29:53  time: 1.5597  data_time: 0.0100  memory: 13287  loss: 0.2745  decode.loss_ce: 0.2745  decode.acc_seg: 97.6225
+2024/01/30 22:11:11 - mmengine - INFO - Epoch(train)  [57][20/26]  base_lr: 8.8452e-06 lr: 8.8452e-06  eta: 0:29:37  time: 1.5582  data_time: 0.0094  memory: 13287  loss: 0.2727  decode.loss_ce: 0.2727  decode.acc_seg: 98.9739
+2024/01/30 22:11:20 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:11:36 - mmengine - INFO - Epoch(train)  [58][10/26]  base_lr: 8.5174e-06 lr: 8.5174e-06  eta: 0:29:12  time: 1.5606  data_time: 0.0099  memory: 13287  loss: 0.2729  decode.loss_ce: 0.2729  decode.acc_seg: 97.9687
+2024/01/30 22:11:52 - mmengine - INFO - Epoch(train)  [58][20/26]  base_lr: 8.5174e-06 lr: 8.5174e-06  eta: 0:28:56  time: 1.5626  data_time: 0.0102  memory: 13287  loss: 0.2724  decode.loss_ce: 0.2724  decode.acc_seg: 99.7893
+2024/01/30 22:12:01 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:12:17 - mmengine - INFO - Epoch(train)  [59][10/26]  base_lr: 8.1912e-06 lr: 8.1912e-06  eta: 0:28:30  time: 1.5632  data_time: 0.0110  memory: 13287  loss: 0.2703  decode.loss_ce: 0.2703  decode.acc_seg: 99.2671
+2024/01/30 22:12:32 - mmengine - INFO - Epoch(train)  [59][20/26]  base_lr: 8.1912e-06 lr: 8.1912e-06  eta: 0:28:14  time: 1.5653  data_time: 0.0116  memory: 13287  loss: 0.2714  decode.loss_ce: 0.2714  decode.acc_seg: 99.7682
+2024/01/30 22:12:42 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:12:57 - mmengine - INFO - Epoch(train)  [60][10/26]  base_lr: 7.8670e-06 lr: 7.8670e-06  eta: 0:27:49  time: 1.5634  data_time: 0.0112  memory: 13287  loss: 0.2677  decode.loss_ce: 0.2677  decode.acc_seg: 99.2613
+2024/01/30 22:13:13 - mmengine - INFO - Epoch(train)  [60][20/26]  base_lr: 7.8670e-06 lr: 7.8670e-06  eta: 0:27:33  time: 1.5617  data_time: 0.0107  memory: 13287  loss: 0.2663  decode.loss_ce: 0.2663  decode.acc_seg: 98.9691
+2024/01/30 22:13:22 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:13:22 - mmengine - INFO - Saving checkpoint at 60 epochs
+2024/01/30 22:13:31 - mmengine - INFO - Epoch(val)  [60][10/49]    eta: 0:00:09  time: 0.1742  data_time: 0.0614  memory: 13287  
+2024/01/30 22:13:33 - mmengine - INFO - Epoch(val)  [60][20/49]    eta: 0:00:05  time: 0.1749  data_time: 0.0621  memory: 6693  
+2024/01/30 22:13:34 - mmengine - INFO - Epoch(val)  [60][30/49]    eta: 0:00:03  time: 0.1750  data_time: 0.0620  memory: 6693  
+2024/01/30 22:13:36 - mmengine - INFO - Epoch(val)  [60][40/49]    eta: 0:00:01  time: 0.1748  data_time: 0.0616  memory: 6693  
+2024/01/30 22:13:37 - mmengine - INFO - per class results:
+2024/01/30 22:13:37 - mmengine - INFO - 
++-----------+--------+-----------+--------+-------+-------+
+|   Class   | Fscore | Precision | Recall |  IoU  |  Acc  |
++-----------+--------+-----------+--------+-------+-------+
+| unchanged | 97.93  |   97.13   | 98.73  | 95.94 | 98.73 |
+|  changed  | 55.58  |   67.39   | 47.29  | 38.49 | 47.29 |
++-----------+--------+-----------+--------+-------+-------+
+2024/01/30 22:13:37 - mmengine - INFO - Epoch(val) [60][49/49]    aAcc: 96.0400  mFscore: 76.7500  mPrecision: 82.2600  mRecall: 73.0100  mIoU: 67.2100  mAcc: 73.0100  data_time: 0.0614  time: 0.1748
+2024/01/30 22:13:53 - mmengine - INFO - Epoch(train)  [61][10/26]  base_lr: 7.5451e-06 lr: 7.5451e-06  eta: 0:27:07  time: 1.5671  data_time: 0.0154  memory: 13287  loss: 0.2653  decode.loss_ce: 0.2653  decode.acc_seg: 99.4614
+2024/01/30 22:14:09 - mmengine - INFO - Epoch(train)  [61][20/26]  base_lr: 7.5451e-06 lr: 7.5451e-06  eta: 0:26:52  time: 1.5684  data_time: 0.0155  memory: 13287  loss: 0.2638  decode.loss_ce: 0.2638  decode.acc_seg: 98.6381
+2024/01/30 22:14:18 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:14:34 - mmengine - INFO - Epoch(train)  [62][10/26]  base_lr: 7.2260e-06 lr: 7.2260e-06  eta: 0:26:26  time: 1.5684  data_time: 0.0161  memory: 13287  loss: 0.2629  decode.loss_ce: 0.2629  decode.acc_seg: 98.6313
+2024/01/30 22:14:49 - mmengine - INFO - Epoch(train)  [62][20/26]  base_lr: 7.2260e-06 lr: 7.2260e-06  eta: 0:26:10  time: 1.5685  data_time: 0.0162  memory: 13287  loss: 0.2639  decode.loss_ce: 0.2639  decode.acc_seg: 97.9155
+2024/01/30 22:14:59 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:15:15 - mmengine - INFO - Epoch(train)  [63][10/26]  base_lr: 6.9098e-06 lr: 6.9098e-06  eta: 0:25:45  time: 1.5625  data_time: 0.0115  memory: 13287  loss: 0.2634  decode.loss_ce: 0.2634  decode.acc_seg: 98.3900
+2024/01/30 22:15:30 - mmengine - INFO - Epoch(train)  [63][20/26]  base_lr: 6.9098e-06 lr: 6.9098e-06  eta: 0:25:29  time: 1.5613  data_time: 0.0116  memory: 13287  loss: 0.2635  decode.loss_ce: 0.2635  decode.acc_seg: 99.4679
+2024/01/30 22:15:39 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:15:55 - mmengine - INFO - Epoch(train)  [64][10/26]  base_lr: 6.5971e-06 lr: 6.5971e-06  eta: 0:25:03  time: 1.5606  data_time: 0.0119  memory: 13287  loss: 0.2624  decode.loss_ce: 0.2624  decode.acc_seg: 99.6355
+2024/01/30 22:16:11 - mmengine - INFO - Epoch(train)  [64][20/26]  base_lr: 6.5971e-06 lr: 6.5971e-06  eta: 0:24:47  time: 1.5604  data_time: 0.0114  memory: 13287  loss: 0.2603  decode.loss_ce: 0.2603  decode.acc_seg: 99.2919
+2024/01/30 22:16:20 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:16:39 - mmengine - INFO - Epoch(train)  [65][10/26]  base_lr: 6.2880e-06 lr: 6.2880e-06  eta: 0:24:24  time: 1.6230  data_time: 0.0100  memory: 13287  loss: 0.2576  decode.loss_ce: 0.2576  decode.acc_seg: 99.7260
+2024/01/30 22:16:54 - mmengine - INFO - Epoch(train)  [65][20/26]  base_lr: 6.2880e-06 lr: 6.2880e-06  eta: 0:24:08  time: 1.6232  data_time: 0.0092  memory: 13287  loss: 0.2550  decode.loss_ce: 0.2550  decode.acc_seg: 99.5688
+2024/01/30 22:17:04 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:17:19 - mmengine - INFO - Epoch(train)  [66][10/26]  base_lr: 5.9830e-06 lr: 5.9830e-06  eta: 0:23:42  time: 1.6240  data_time: 0.0095  memory: 13287  loss: 0.2544  decode.loss_ce: 0.2544  decode.acc_seg: 99.3741
+2024/01/30 22:17:35 - mmengine - INFO - Epoch(train)  [66][20/26]  base_lr: 5.9830e-06 lr: 5.9830e-06  eta: 0:23:26  time: 1.6260  data_time: 0.0096  memory: 13287  loss: 0.2551  decode.loss_ce: 0.2551  decode.acc_seg: 99.4646
+2024/01/30 22:17:44 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:18:00 - mmengine - INFO - Epoch(train)  [67][10/26]  base_lr: 5.6825e-06 lr: 5.6825e-06  eta: 0:23:01  time: 1.5656  data_time: 0.0096  memory: 13287  loss: 0.2562  decode.loss_ce: 0.2562  decode.acc_seg: 99.8157
+2024/01/30 22:18:16 - mmengine - INFO - Epoch(train)  [67][20/26]  base_lr: 5.6825e-06 lr: 5.6825e-06  eta: 0:22:45  time: 1.5669  data_time: 0.0094  memory: 13287  loss: 0.2575  decode.loss_ce: 0.2575  decode.acc_seg: 98.5301
+2024/01/30 22:18:25 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:18:41 - mmengine - INFO - Epoch(train)  [68][10/26]  base_lr: 5.3866e-06 lr: 5.3866e-06  eta: 0:22:20  time: 1.5660  data_time: 0.0100  memory: 13287  loss: 0.2573  decode.loss_ce: 0.2573  decode.acc_seg: 99.2172
+2024/01/30 22:18:56 - mmengine - INFO - Epoch(train)  [68][20/26]  base_lr: 5.3866e-06 lr: 5.3866e-06  eta: 0:22:04  time: 1.5646  data_time: 0.0106  memory: 13287  loss: 0.2560  decode.loss_ce: 0.2560  decode.acc_seg: 99.2376
+2024/01/30 22:19:06 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:19:21 - mmengine - INFO - Epoch(train)  [69][10/26]  base_lr: 5.0958e-06 lr: 5.0958e-06  eta: 0:21:38  time: 1.5630  data_time: 0.0123  memory: 13287  loss: 0.2543  decode.loss_ce: 0.2543  decode.acc_seg: 98.5478
+2024/01/30 22:19:37 - mmengine - INFO - Epoch(train)  [69][20/26]  base_lr: 5.0958e-06 lr: 5.0958e-06  eta: 0:21:23  time: 1.5623  data_time: 0.0131  memory: 13287  loss: 0.2519  decode.loss_ce: 0.2519  decode.acc_seg: 99.3916
+2024/01/30 22:19:46 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:20:02 - mmengine - INFO - Epoch(train)  [70][10/26]  base_lr: 4.8103e-06 lr: 4.8103e-06  eta: 0:20:57  time: 1.5631  data_time: 0.0137  memory: 13287  loss: 0.2499  decode.loss_ce: 0.2499  decode.acc_seg: 98.7704
+2024/01/30 22:20:18 - mmengine - INFO - Epoch(train)  [70][20/26]  base_lr: 4.8103e-06 lr: 4.8103e-06  eta: 0:20:41  time: 1.5640  data_time: 0.0137  memory: 13287  loss: 0.2508  decode.loss_ce: 0.2508  decode.acc_seg: 98.1966
+2024/01/30 22:20:27 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:20:27 - mmengine - INFO - Saving checkpoint at 70 epochs
+2024/01/30 22:20:50 - mmengine - INFO - Epoch(train)  [71][10/26]  base_lr: 4.5305e-06 lr: 4.5305e-06  eta: 0:20:16  time: 1.5767  data_time: 0.0226  memory: 13287  loss: 0.2504  decode.loss_ce: 0.2504  decode.acc_seg: 99.3992
+2024/01/30 22:21:05 - mmengine - INFO - Epoch(train)  [71][20/26]  base_lr: 4.5305e-06 lr: 4.5305e-06  eta: 0:20:00  time: 1.5773  data_time: 0.0224  memory: 13287  loss: 0.2513  decode.loss_ce: 0.2513  decode.acc_seg: 99.5380
+2024/01/30 22:21:15 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:21:34 - mmengine - INFO - Epoch(train)  [72][10/26]  base_lr: 4.2567e-06 lr: 4.2567e-06  eta: 0:19:36  time: 1.6358  data_time: 0.0198  memory: 13287  loss: 0.2511  decode.loss_ce: 0.2511  decode.acc_seg: 97.0575
+2024/01/30 22:21:49 - mmengine - INFO - Epoch(train)  [72][20/26]  base_lr: 4.2567e-06 lr: 4.2567e-06  eta: 0:19:20  time: 1.6358  data_time: 0.0188  memory: 13287  loss: 0.2513  decode.loss_ce: 0.2513  decode.acc_seg: 99.1914
+2024/01/30 22:21:58 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:22:14 - mmengine - INFO - Epoch(train)  [73][10/26]  base_lr: 3.9892e-06 lr: 3.9892e-06  eta: 0:18:55  time: 1.6206  data_time: 0.0094  memory: 13287  loss: 0.2491  decode.loss_ce: 0.2491  decode.acc_seg: 98.2368
+2024/01/30 22:22:30 - mmengine - INFO - Epoch(train)  [73][20/26]  base_lr: 3.9892e-06 lr: 3.9892e-06  eta: 0:18:39  time: 1.6187  data_time: 0.0093  memory: 13287  loss: 0.2485  decode.loss_ce: 0.2485  decode.acc_seg: 99.5055
+2024/01/30 22:22:39 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:22:54 - mmengine - INFO - Epoch(train)  [74][10/26]  base_lr: 3.7282e-06 lr: 3.7282e-06  eta: 0:18:13  time: 1.5558  data_time: 0.0099  memory: 13287  loss: 0.2472  decode.loss_ce: 0.2472  decode.acc_seg: 99.6956
+2024/01/30 22:23:10 - mmengine - INFO - Epoch(train)  [74][20/26]  base_lr: 3.7282e-06 lr: 3.7282e-06  eta: 0:17:57  time: 1.5560  data_time: 0.0099  memory: 13287  loss: 0.2472  decode.loss_ce: 0.2472  decode.acc_seg: 99.3450
+2024/01/30 22:23:19 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:23:35 - mmengine - INFO - Epoch(train)  [75][10/26]  base_lr: 3.4741e-06 lr: 3.4741e-06  eta: 0:17:32  time: 1.5566  data_time: 0.0083  memory: 13287  loss: 0.2454  decode.loss_ce: 0.2454  decode.acc_seg: 99.6549
+2024/01/30 22:23:50 - mmengine - INFO - Epoch(train)  [75][20/26]  base_lr: 3.4741e-06 lr: 3.4741e-06  eta: 0:17:16  time: 1.5553  data_time: 0.0084  memory: 13287  loss: 0.2438  decode.loss_ce: 0.2438  decode.acc_seg: 98.6288
+2024/01/30 22:24:00 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:24:15 - mmengine - INFO - Epoch(train)  [76][10/26]  base_lr: 3.2272e-06 lr: 3.2272e-06  eta: 0:16:51  time: 1.5553  data_time: 0.0085  memory: 13287  loss: 0.2434  decode.loss_ce: 0.2434  decode.acc_seg: 97.3850
+2024/01/30 22:24:31 - mmengine - INFO - Epoch(train)  [76][20/26]  base_lr: 3.2272e-06 lr: 3.2272e-06  eta: 0:16:35  time: 1.5555  data_time: 0.0083  memory: 13287  loss: 0.2442  decode.loss_ce: 0.2442  decode.acc_seg: 99.6689
+2024/01/30 22:24:40 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:24:56 - mmengine - INFO - Epoch(train)  [77][10/26]  base_lr: 2.9876e-06 lr: 2.9876e-06  eta: 0:16:10  time: 1.5576  data_time: 0.0082  memory: 13287  loss: 0.2464  decode.loss_ce: 0.2464  decode.acc_seg: 99.8399
+2024/01/30 22:25:12 - mmengine - INFO - Epoch(train)  [77][20/26]  base_lr: 2.9876e-06 lr: 2.9876e-06  eta: 0:15:54  time: 1.5604  data_time: 0.0085  memory: 13287  loss: 0.2472  decode.loss_ce: 0.2472  decode.acc_seg: 98.9990
+2024/01/30 22:25:18 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:25:21 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:25:37 - mmengine - INFO - Epoch(train)  [78][10/26]  base_lr: 2.7557e-06 lr: 2.7557e-06  eta: 0:15:28  time: 1.5618  data_time: 0.0094  memory: 13287  loss: 0.2451  decode.loss_ce: 0.2451  decode.acc_seg: 97.3504
+2024/01/30 22:25:52 - mmengine - INFO - Epoch(train)  [78][20/26]  base_lr: 2.7557e-06 lr: 2.7557e-06  eta: 0:15:12  time: 1.5615  data_time: 0.0097  memory: 13287  loss: 0.2466  decode.loss_ce: 0.2466  decode.acc_seg: 99.0320
+2024/01/30 22:26:01 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:26:17 - mmengine - INFO - Epoch(train)  [79][10/26]  base_lr: 2.5318e-06 lr: 2.5318e-06  eta: 0:14:47  time: 1.5613  data_time: 0.0093  memory: 13287  loss: 0.2444  decode.loss_ce: 0.2444  decode.acc_seg: 99.4689
+2024/01/30 22:26:33 - mmengine - INFO - Epoch(train)  [79][20/26]  base_lr: 2.5318e-06 lr: 2.5318e-06  eta: 0:14:31  time: 1.5612  data_time: 0.0094  memory: 13287  loss: 0.2442  decode.loss_ce: 0.2442  decode.acc_seg: 99.3756
+2024/01/30 22:26:42 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:26:58 - mmengine - INFO - Epoch(train)  [80][10/26]  base_lr: 2.3160e-06 lr: 2.3160e-06  eta: 0:14:06  time: 1.5627  data_time: 0.0089  memory: 13287  loss: 0.2425  decode.loss_ce: 0.2425  decode.acc_seg: 98.4530
+2024/01/30 22:27:13 - mmengine - INFO - Epoch(train)  [80][20/26]  base_lr: 2.3160e-06 lr: 2.3160e-06  eta: 0:13:50  time: 1.5621  data_time: 0.0096  memory: 13287  loss: 0.2398  decode.loss_ce: 0.2398  decode.acc_seg: 98.8296
+2024/01/30 22:27:23 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:27:23 - mmengine - INFO - Saving checkpoint at 80 epochs
+2024/01/30 22:27:31 - mmengine - INFO - Epoch(val)  [80][10/49]    eta: 0:00:07  time: 0.1668  data_time: 0.0536  memory: 13287  
+2024/01/30 22:27:33 - mmengine - INFO - Epoch(val)  [80][20/49]    eta: 0:00:05  time: 0.1656  data_time: 0.0525  memory: 6693  
+2024/01/30 22:27:34 - mmengine - INFO - Epoch(val)  [80][30/49]    eta: 0:00:03  time: 0.1653  data_time: 0.0525  memory: 6693  
+2024/01/30 22:27:36 - mmengine - INFO - Epoch(val)  [80][40/49]    eta: 0:00:01  time: 0.1653  data_time: 0.0526  memory: 6693  
+2024/01/30 22:27:37 - mmengine - INFO - per class results:
+2024/01/30 22:27:37 - mmengine - INFO - 
++-----------+--------+-----------+--------+-------+-------+
+|   Class   | Fscore | Precision | Recall |  IoU  |  Acc  |
++-----------+--------+-----------+--------+-------+-------+
+| unchanged | 97.95  |   96.95   | 98.98  | 95.99 | 98.98 |
+|  changed  | 53.84  |   70.32   | 43.61  | 36.84 | 43.61 |
++-----------+--------+-----------+--------+-------+-------+
+2024/01/30 22:27:37 - mmengine - INFO - Epoch(val) [80][49/49]    aAcc: 96.0800  mFscore: 75.9000  mPrecision: 83.6400  mRecall: 71.3000  mIoU: 66.4100  mAcc: 71.3000  data_time: 0.0528  time: 0.1656
+2024/01/30 22:27:57 - mmengine - INFO - Epoch(train)  [81][10/26]  base_lr: 2.1086e-06 lr: 2.1086e-06  eta: 0:13:26  time: 1.6482  data_time: 0.0162  memory: 13287  loss: 0.2403  decode.loss_ce: 0.2403  decode.acc_seg: 98.8275
+2024/01/30 22:28:13 - mmengine - INFO - Epoch(train)  [81][20/26]  base_lr: 2.1086e-06 lr: 2.1086e-06  eta: 0:13:10  time: 1.6485  data_time: 0.0162  memory: 13287  loss: 0.2383  decode.loss_ce: 0.2383  decode.acc_seg: 100.0000
+2024/01/30 22:28:22 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:28:38 - mmengine - INFO - Epoch(train)  [82][10/26]  base_lr: 1.9098e-06 lr: 1.9098e-06  eta: 0:12:45  time: 1.6477  data_time: 0.0156  memory: 13287  loss: 0.2381  decode.loss_ce: 0.2381  decode.acc_seg: 98.2322
+2024/01/30 22:28:54 - mmengine - INFO - Epoch(train)  [82][20/26]  base_lr: 1.9098e-06 lr: 1.9098e-06  eta: 0:12:29  time: 1.6490  data_time: 0.0146  memory: 13287  loss: 0.2400  decode.loss_ce: 0.2400  decode.acc_seg: 99.3631
+2024/01/30 22:29:03 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:29:19 - mmengine - INFO - Epoch(train)  [83][10/26]  base_lr: 1.7199e-06 lr: 1.7199e-06  eta: 0:12:03  time: 1.5658  data_time: 0.0089  memory: 13287  loss: 0.2415  decode.loss_ce: 0.2415  decode.acc_seg: 99.1962
+2024/01/30 22:29:34 - mmengine - INFO - Epoch(train)  [83][20/26]  base_lr: 1.7199e-06 lr: 1.7199e-06  eta: 0:11:48  time: 1.5651  data_time: 0.0094  memory: 13287  loss: 0.2440  decode.loss_ce: 0.2440  decode.acc_seg: 99.4528
+2024/01/30 22:29:44 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:29:59 - mmengine - INFO - Epoch(train)  [84][10/26]  base_lr: 1.5390e-06 lr: 1.5390e-06  eta: 0:11:22  time: 1.5638  data_time: 0.0087  memory: 13287  loss: 0.2436  decode.loss_ce: 0.2436  decode.acc_seg: 99.5060
+2024/01/30 22:30:15 - mmengine - INFO - Epoch(train)  [84][20/26]  base_lr: 1.5390e-06 lr: 1.5390e-06  eta: 0:11:06  time: 1.5620  data_time: 0.0088  memory: 13287  loss: 0.2425  decode.loss_ce: 0.2425  decode.acc_seg: 99.4988
+2024/01/30 22:30:24 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:30:40 - mmengine - INFO - Epoch(train)  [85][10/26]  base_lr: 1.3674e-06 lr: 1.3674e-06  eta: 0:10:41  time: 1.5608  data_time: 0.0082  memory: 13287  loss: 0.2400  decode.loss_ce: 0.2400  decode.acc_seg: 99.6598
+2024/01/30 22:30:56 - mmengine - INFO - Epoch(train)  [85][20/26]  base_lr: 1.3674e-06 lr: 1.3674e-06  eta: 0:10:25  time: 1.5617  data_time: 0.0082  memory: 13287  loss: 0.2409  decode.loss_ce: 0.2409  decode.acc_seg: 98.8434
+2024/01/30 22:31:05 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:31:21 - mmengine - INFO - Epoch(train)  [86][10/26]  base_lr: 1.2053e-06 lr: 1.2053e-06  eta: 0:10:00  time: 1.5620  data_time: 0.0090  memory: 13287  loss: 0.2399  decode.loss_ce: 0.2399  decode.acc_seg: 98.8332
+2024/01/30 22:31:36 - mmengine - INFO - Epoch(train)  [86][20/26]  base_lr: 1.2053e-06 lr: 1.2053e-06  eta: 0:09:44  time: 1.5625  data_time: 0.0100  memory: 13287  loss: 0.2394  decode.loss_ce: 0.2394  decode.acc_seg: 99.4953
+2024/01/30 22:31:46 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:32:01 - mmengine - INFO - Epoch(train)  [87][10/26]  base_lr: 1.0527e-06 lr: 1.0527e-06  eta: 0:09:19  time: 1.5625  data_time: 0.0111  memory: 13287  loss: 0.2403  decode.loss_ce: 0.2403  decode.acc_seg: 99.3080
+2024/01/30 22:32:17 - mmengine - INFO - Epoch(train)  [87][20/26]  base_lr: 1.0527e-06 lr: 1.0527e-06  eta: 0:09:03  time: 1.5625  data_time: 0.0116  memory: 13287  loss: 0.2388  decode.loss_ce: 0.2388  decode.acc_seg: 99.2784
+2024/01/30 22:32:26 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:32:42 - mmengine - INFO - Epoch(train)  [88][10/26]  base_lr: 9.0993e-07 lr: 9.0993e-07  eta: 0:08:38  time: 1.5627  data_time: 0.0112  memory: 13287  loss: 0.2411  decode.loss_ce: 0.2411  decode.acc_seg: 99.7776
+2024/01/30 22:32:58 - mmengine - INFO - Epoch(train)  [88][20/26]  base_lr: 9.0993e-07 lr: 9.0993e-07  eta: 0:08:22  time: 1.5638  data_time: 0.0104  memory: 13287  loss: 0.2421  decode.loss_ce: 0.2421  decode.acc_seg: 98.5923
+2024/01/30 22:33:07 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:33:23 - mmengine - INFO - Epoch(train)  [89][10/26]  base_lr: 7.7710e-07 lr: 7.7710e-07  eta: 0:07:56  time: 1.5634  data_time: 0.0090  memory: 13287  loss: 0.2414  decode.loss_ce: 0.2414  decode.acc_seg: 99.1860
+2024/01/30 22:33:38 - mmengine - INFO - Epoch(train)  [89][20/26]  base_lr: 7.7710e-07 lr: 7.7710e-07  eta: 0:07:41  time: 1.5629  data_time: 0.0086  memory: 13287  loss: 0.2417  decode.loss_ce: 0.2417  decode.acc_seg: 99.7156
+2024/01/30 22:33:47 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:34:03 - mmengine - INFO - Epoch(train)  [90][10/26]  base_lr: 6.5436e-07 lr: 6.5436e-07  eta: 0:07:15  time: 1.5605  data_time: 0.0087  memory: 13287  loss: 0.2403  decode.loss_ce: 0.2403  decode.acc_seg: 99.2693
+2024/01/30 22:34:19 - mmengine - INFO - Epoch(train)  [90][20/26]  base_lr: 6.5436e-07 lr: 6.5436e-07  eta: 0:07:00  time: 1.5610  data_time: 0.0086  memory: 13287  loss: 0.2383  decode.loss_ce: 0.2383  decode.acc_seg: 99.6236
+2024/01/30 22:34:28 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:34:28 - mmengine - INFO - Saving checkpoint at 90 epochs
+2024/01/30 22:34:52 - mmengine - INFO - Epoch(train)  [91][10/26]  base_lr: 5.4183e-07 lr: 5.4183e-07  eta: 0:06:34  time: 1.5845  data_time: 0.0265  memory: 13287  loss: 0.2386  decode.loss_ce: 0.2386  decode.acc_seg: 99.3403
+2024/01/30 22:35:08 - mmengine - INFO - Epoch(train)  [91][20/26]  base_lr: 5.4183e-07 lr: 5.4183e-07  eta: 0:06:19  time: 1.5852  data_time: 0.0268  memory: 13287  loss: 0.2399  decode.loss_ce: 0.2399  decode.acc_seg: 99.6311
+2024/01/30 22:35:17 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:35:33 - mmengine - INFO - Epoch(train)  [92][10/26]  base_lr: 4.3964e-07 lr: 4.3964e-07  eta: 0:05:53  time: 1.5848  data_time: 0.0274  memory: 13287  loss: 0.2388  decode.loss_ce: 0.2388  decode.acc_seg: 99.7114
+2024/01/30 22:35:48 - mmengine - INFO - Epoch(train)  [92][20/26]  base_lr: 4.3964e-07 lr: 4.3964e-07  eta: 0:05:37  time: 1.5847  data_time: 0.0283  memory: 13287  loss: 0.2382  decode.loss_ce: 0.2382  decode.acc_seg: 99.5825
+2024/01/30 22:35:57 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:36:13 - mmengine - INFO - Epoch(train)  [93][10/26]  base_lr: 3.4791e-07 lr: 3.4791e-07  eta: 0:05:12  time: 1.5596  data_time: 0.0105  memory: 13287  loss: 0.2395  decode.loss_ce: 0.2395  decode.acc_seg: 99.6463
+2024/01/30 22:36:29 - mmengine - INFO - Epoch(train)  [93][20/26]  base_lr: 3.4791e-07 lr: 3.4791e-07  eta: 0:04:56  time: 1.5583  data_time: 0.0105  memory: 13287  loss: 0.2385  decode.loss_ce: 0.2385  decode.acc_seg: 99.7384
+2024/01/30 22:36:38 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:36:53 - mmengine - INFO - Epoch(train)  [94][10/26]  base_lr: 2.6673e-07 lr: 2.6673e-07  eta: 0:04:31  time: 1.5569  data_time: 0.0106  memory: 13287  loss: 0.2395  decode.loss_ce: 0.2395  decode.acc_seg: 98.7777
+2024/01/30 22:37:09 - mmengine - INFO - Epoch(train)  [94][20/26]  base_lr: 2.6673e-07 lr: 2.6673e-07  eta: 0:04:15  time: 1.5567  data_time: 0.0095  memory: 13287  loss: 0.2409  decode.loss_ce: 0.2409  decode.acc_seg: 99.3991
+2024/01/30 22:37:18 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:37:34 - mmengine - INFO - Epoch(train)  [95][10/26]  base_lr: 1.9620e-07 lr: 1.9620e-07  eta: 0:03:50  time: 1.5581  data_time: 0.0093  memory: 13287  loss: 0.2402  decode.loss_ce: 0.2402  decode.acc_seg: 98.8227
+2024/01/30 22:37:50 - mmengine - INFO - Epoch(train)  [95][20/26]  base_lr: 1.9620e-07 lr: 1.9620e-07  eta: 0:03:34  time: 1.5592  data_time: 0.0091  memory: 13287  loss: 0.2395  decode.loss_ce: 0.2395  decode.acc_seg: 99.5633
+2024/01/30 22:37:59 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:38:15 - mmengine - INFO - Epoch(train)  [96][10/26]  base_lr: 1.3639e-07 lr: 1.3639e-07  eta: 0:03:09  time: 1.5619  data_time: 0.0086  memory: 13287  loss: 0.2404  decode.loss_ce: 0.2404  decode.acc_seg: 99.6611
+2024/01/30 22:38:30 - mmengine - INFO - Epoch(train)  [96][20/26]  base_lr: 1.3639e-07 lr: 1.3639e-07  eta: 0:02:53  time: 1.5617  data_time: 0.0097  memory: 13287  loss: 0.2403  decode.loss_ce: 0.2403  decode.acc_seg: 99.3748
+2024/01/30 22:38:40 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:38:55 - mmengine - INFO - Epoch(train)  [97][10/26]  base_lr: 8.7359e-08 lr: 8.7359e-08  eta: 0:02:28  time: 1.5587  data_time: 0.0103  memory: 13287  loss: 0.2387  decode.loss_ce: 0.2387  decode.acc_seg: 99.8203
+2024/01/30 22:39:11 - mmengine - INFO - Epoch(train)  [97][20/26]  base_lr: 8.7359e-08 lr: 8.7359e-08  eta: 0:02:12  time: 1.5594  data_time: 0.0105  memory: 13287  loss: 0.2387  decode.loss_ce: 0.2387  decode.acc_seg: 99.7235
+2024/01/30 22:39:20 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:39:36 - mmengine - INFO - Epoch(train)  [98][10/26]  base_lr: 4.9171e-08 lr: 4.9171e-08  eta: 0:01:47  time: 1.5584  data_time: 0.0112  memory: 13287  loss: 0.2376  decode.loss_ce: 0.2376  decode.acc_seg: 98.7440
+2024/01/30 22:39:56 - mmengine - INFO - Epoch(train)  [98][20/26]  base_lr: 4.9171e-08 lr: 4.9171e-08  eta: 0:01:31  time: 1.6454  data_time: 0.0115  memory: 13287  loss: 0.2384  decode.loss_ce: 0.2384  decode.acc_seg: 98.9349
+2024/01/30 22:40:05 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:40:21 - mmengine - INFO - Epoch(train)  [99][10/26]  base_lr: 2.1864e-08 lr: 2.1864e-08  eta: 0:01:06  time: 1.6472  data_time: 0.0125  memory: 13287  loss: 0.2399  decode.loss_ce: 0.2399  decode.acc_seg: 99.0064
+2024/01/30 22:40:36 - mmengine - INFO - Epoch(train)  [99][20/26]  base_lr: 2.1864e-08 lr: 2.1864e-08  eta: 0:00:50  time: 1.6476  data_time: 0.0132  memory: 13287  loss: 0.2412  decode.loss_ce: 0.2412  decode.acc_seg: 99.0657
+2024/01/30 22:40:46 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:41:01 - mmengine - INFO - Epoch(train) [100][10/26]  base_lr: 5.4674e-09 lr: 5.4674e-09  eta: 0:00:25  time: 1.5616  data_time: 0.0114  memory: 13287  loss: 0.2450  decode.loss_ce: 0.2450  decode.acc_seg: 98.0550
+2024/01/30 22:41:17 - mmengine - INFO - Epoch(train) [100][20/26]  base_lr: 5.4674e-09 lr: 5.4674e-09  eta: 0:00:09  time: 1.5605  data_time: 0.0106  memory: 13287  loss: 0.2444  decode.loss_ce: 0.2444  decode.acc_seg: 99.0858
+2024/01/30 22:41:26 - mmengine - INFO - Exp name: intern-xl-unet-96-imp-mtp_oscd_rgb_20240130_212900
+2024/01/30 22:41:26 - mmengine - INFO - Saving checkpoint at 100 epochs
+2024/01/30 22:41:35 - mmengine - INFO - Epoch(val) [100][10/49]    eta: 0:00:08  time: 0.1716  data_time: 0.0588  memory: 13287  
+2024/01/30 22:41:37 - mmengine - INFO - Epoch(val) [100][20/49]    eta: 0:00:05  time: 0.1715  data_time: 0.0585  memory: 6693  
+2024/01/30 22:41:38 - mmengine - INFO - Epoch(val) [100][30/49]    eta: 0:00:03  time: 0.1716  data_time: 0.0585  memory: 6693  
+2024/01/30 22:41:40 - mmengine - INFO - Epoch(val) [100][40/49]    eta: 0:00:01  time: 0.1712  data_time: 0.0583  memory: 6693  
+2024/01/30 22:41:41 - mmengine - INFO - per class results:
+2024/01/30 22:41:41 - mmengine - INFO - 
++-----------+--------+-----------+--------+-------+-------+
+|   Class   | Fscore | Precision | Recall |  IoU  |  Acc  |
++-----------+--------+-----------+--------+-------+-------+
+| unchanged | 97.96  |   97.11   | 98.82  | 95.99 | 98.82 |
+|  changed  | 55.61  |   68.64   | 46.73  | 38.51 | 46.73 |
++-----------+--------+-----------+--------+-------+-------+
+2024/01/30 22:41:41 - mmengine - INFO - Epoch(val) [100][49/49]    aAcc: 96.0900  mFscore: 76.7800  mPrecision: 82.8700  mRecall: 72.7800  mIoU: 67.2500  mAcc: 72.7800  data_time: 0.0582  time: 0.1709

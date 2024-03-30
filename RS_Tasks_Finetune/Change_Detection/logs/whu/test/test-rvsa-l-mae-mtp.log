@@ -1,0 +1,406 @@
+2024/02/10 02:26:15 - mmengine - INFO - Config:
+crop_size = (
+    256,
+    256,
+)
+data_preprocessor = dict(
+    bgr_to_rgb=True,
+    mean=[
+        123.675,
+        116.28,
+        103.53,
+        123.675,
+        116.28,
+        103.53,
+    ],
+    pad_val=0,
+    seg_pad_val=255,
+    size_divisor=32,
+    std=[
+        58.395,
+        57.12,
+        57.375,
+        58.395,
+        57.12,
+        57.375,
+    ],
+    test_cfg=dict(size_divisor=32),
+    type='DualInputSegDataPreProcessor')
+data_root = '/work/share/achk2o1zg1/diwang22/dataset/WHU_Building_CD/whu_cd_patch_dataset'
+dataset_type = 'WHU_CD_Dataset'
+default_hooks = dict(
+    checkpoint=dict(
+        by_epoch=True, interval=20, save_best='mIoU', type='CheckpointHook'),
+    logger=dict(interval=50, log_metric_by_epoch=True, type='LoggerHook'),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    timer=dict(type='IterTimerHook'),
+    visualization=dict(
+        draw=True,
+        img_shape=(
+            256,
+            256,
+            3,
+        ),
+        interval=1,
+        type='CDVisualizationHook'))
+default_scope = 'opencd'
+env_cfg = dict(
+    cudnn_benchmark=True,
+    dist_cfg=dict(backend='nccl'),
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+launcher = 'slurm'
+load_from = '/work/share/achk2o1zg1/diwang22/work_dir/multitask_pretrain/finetune/Change_Detection/whu/rvsa-l-unet-256-mae-mtp_whu/epoch_200.pth'
+log_level = 'INFO'
+log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
+model = dict(
+    backbone=dict(
+        attn_drop_rate=0.0,
+        depth=24,
+        drop_path_rate=0.3,
+        drop_rate=0.0,
+        embed_dim=1024,
+        frozen_stages=-1,
+        img_size=256,
+        interval=6,
+        mlp_ratio=4,
+        num_heads=16,
+        out_indices=[
+            7,
+            11,
+            15,
+            23,
+        ],
+        patch_size=16,
+        pretrained=
+        '/work/share/achk2o1zg1/diwang22/work_dir/multitask_pretrain/pretrain/avg/with_background/vit_l_rvsa_448_mae_samrs_mtp_three/last_vit_l_rvsa_ss_is_rd_pretrn_model_encoder.pth',
+        qk_scale=None,
+        qkv_bias=True,
+        type='RVSA_MTP',
+        use_abs_pos_emb=True,
+        use_checkpoint=False),
+    data_preprocessor=dict(
+        bgr_to_rgb=True,
+        mean=[
+            123.675,
+            116.28,
+            103.53,
+            123.675,
+            116.28,
+            103.53,
+        ],
+        pad_val=0,
+        seg_pad_val=255,
+        size_divisor=32,
+        std=[
+            58.395,
+            57.12,
+            57.375,
+            58.395,
+            57.12,
+            57.375,
+        ],
+        test_cfg=dict(size_divisor=32),
+        type='DualInputSegDataPreProcessor'),
+    decode_head=dict(
+        align_corners=False,
+        attention_type=None,
+        center=False,
+        channels=64,
+        decoder_channels=[
+            512,
+            256,
+            128,
+            64,
+        ],
+        dropout_ratio=0.1,
+        encoder_channels=[
+            1024,
+            1024,
+            1024,
+            1024,
+        ],
+        ignore_index=255,
+        in_channels=[
+            1024,
+            1024,
+            1024,
+            1024,
+        ],
+        in_index=[
+            0,
+            1,
+            2,
+            3,
+        ],
+        loss_decode=dict(
+            loss_weight=1.0, type='mmseg.CrossEntropyLoss', use_sigmoid=False),
+        n_blocks=4,
+        norm_cfg=dict(requires_grad=True, type='SyncBN'),
+        num_classes=2,
+        type='UNetHead',
+        use_batchnorm=True),
+    neck=dict(
+        out_indices=(
+            0,
+            1,
+            2,
+            3,
+        ),
+        policy='abs_diff',
+        type='FeatureFusionNeck'),
+    test_cfg=dict(mode='whole'),
+    train_cfg=dict(),
+    type='SiamEncoderDecoder')
+norm_cfg = dict(requires_grad=True, type='SyncBN')
+optim_wrapper = dict(
+    constructor='LayerDecayOptimizerConstructor_ViT',
+    optimizer=dict(
+        betas=(
+            0.9,
+            0.999,
+        ), lr=6e-05, type='AdamW', weight_decay=0.05),
+    paramwise_cfg=dict(layer_decay_rate=0.9, num_layers=24))
+param_scheduler = [
+    dict(
+        begin=0,
+        by_epoch=True,
+        convert_to_iter_based=True,
+        end=5,
+        start_factor=1e-06,
+        type='LinearLR'),
+    dict(T_max=195, begin=5, by_epoch=True, end=200, type='CosineAnnealingLR'),
+]
+resume = False
+test_cfg = dict(type='TestLoop')
+test_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        data_prefix=dict(
+            img_path_from='test/A',
+            img_path_to='test/B',
+            seg_map_path='test/label'),
+        data_root=
+        '/work/share/achk2o1zg1/diwang22/dataset/WHU_Building_CD/whu_cd_patch_dataset',
+        pipeline=[
+            dict(type='MultiImgLoadImageFromFile'),
+            dict(type='MultiImgLoadAnnotations'),
+            dict(type='MultiImgPackSegInputs'),
+        ],
+        type='WHU_CD_Dataset'),
+    num_workers=8,
+    persistent_workers=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+test_evaluator = dict(
+    iou_metrics=[
+        'mFscore',
+        'mIoU',
+    ], type='mmseg.IoUMetric')
+test_pipeline = [
+    dict(type='MultiImgLoadImageFromFile'),
+    dict(type='MultiImgLoadAnnotations'),
+    dict(type='MultiImgPackSegInputs'),
+]
+train_cfg = dict(max_epochs=200, type='EpochBasedTrainLoop', val_interval=40)
+train_dataloader = dict(
+    batch_size=4,
+    dataset=dict(
+        data_prefix=dict(
+            img_path_from='train/A',
+            img_path_to='train/B',
+            seg_map_path='train/label'),
+        data_root=
+        '/work/share/achk2o1zg1/diwang22/dataset/WHU_Building_CD/whu_cd_patch_dataset',
+        pipeline=[
+            dict(type='MultiImgLoadImageFromFile'),
+            dict(type='MultiImgLoadAnnotations'),
+            dict(
+                degree=(
+                    -20,
+                    20,
+                ),
+                flip_prob=0.5,
+                rotate_prob=0.5,
+                type='MultiImgRandomRotFlip'),
+            dict(
+                cat_max_ratio=0.75,
+                crop_size=(
+                    256,
+                    256,
+                ),
+                type='MultiImgRandomCrop'),
+            dict(prob=0.5, type='MultiImgExchangeTime'),
+            dict(
+                brightness_delta=10,
+                contrast_range=(
+                    0.8,
+                    1.2,
+                ),
+                hue_delta=10,
+                saturation_range=(
+                    0.8,
+                    1.2,
+                ),
+                type='MultiImgPhotoMetricDistortion'),
+            dict(type='MultiImgPackSegInputs'),
+        ],
+        type='WHU_CD_Dataset'),
+    num_workers=8,
+    persistent_workers=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+train_pipeline = [
+    dict(type='MultiImgLoadImageFromFile'),
+    dict(type='MultiImgLoadAnnotations'),
+    dict(
+        degree=(
+            -20,
+            20,
+        ),
+        flip_prob=0.5,
+        rotate_prob=0.5,
+        type='MultiImgRandomRotFlip'),
+    dict(
+        cat_max_ratio=0.75, crop_size=(
+            256,
+            256,
+        ), type='MultiImgRandomCrop'),
+    dict(prob=0.5, type='MultiImgExchangeTime'),
+    dict(
+        brightness_delta=10,
+        contrast_range=(
+            0.8,
+            1.2,
+        ),
+        hue_delta=10,
+        saturation_range=(
+            0.8,
+            1.2,
+        ),
+        type='MultiImgPhotoMetricDistortion'),
+    dict(type='MultiImgPackSegInputs'),
+]
+val_cfg = None
+val_dataloader = None
+val_evaluator = None
+val_pipeline = [
+    dict(type='MultiImgLoadImageFromFile'),
+    dict(keep_ratio=True, scale=(
+        256,
+        256,
+    ), type='MultiImgResize'),
+    dict(type='MultiImgLoadAnnotations'),
+    dict(type='MultiImgPackSegInputs'),
+]
+vis_backends = [
+    dict(type='CDLocalVisBackend'),
+]
+visualizer = dict(
+    alpha=1.0,
+    name='visualizer',
+    save_dir=
+    '/work/share/achk2o1zg1/diwang22/work_dir/multitask_pretrain/finetune/Change_Detection/whu/rvsa-l-unet-256-mae-mtp_whu/predict/show',
+    type='CDLocalVisualizer',
+    vis_backends=[
+        dict(type='CDLocalVisBackend'),
+    ])
+work_dir = '/work/share/achk2o1zg1/diwang22/work_dir/multitask_pretrain/finetune/Change_Detection/whu/rvsa-l-unet-256-mae-mtp_whu/predict'
+
+2024/02/10 02:27:10 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) CDVisualizationHook                
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) CDVisualizationHook                
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) CDVisualizationHook                
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+2024/02/10 02:27:11 - mmengine - WARNING - The prefix is not set in metric class IoUMetric.
+2024/02/10 02:27:19 - mmengine - INFO - Load checkpoint from /work/share/achk2o1zg1/diwang22/work_dir/multitask_pretrain/finetune/Change_Detection/whu/rvsa-l-unet-256-mae-mtp_whu/epoch_200.pth
+2024/02/10 02:27:38 - mmengine - INFO - Epoch(test) [ 50/191]    eta: 0:00:53  time: 0.3781  data_time: 0.0811  memory: 2731  
+2024/02/10 02:27:52 - mmengine - INFO - Epoch(test) [100/191]    eta: 0:00:29  time: 0.2776  data_time: 0.0634  memory: 2731  
+2024/02/10 02:28:06 - mmengine - INFO - Epoch(test) [150/191]    eta: 0:00:12  time: 0.2769  data_time: 0.0631  memory: 2731  
+2024/02/10 02:28:18 - mmengine - INFO - per class results:
+2024/02/10 02:28:18 - mmengine - INFO - 
++-----------+--------+-----------+--------+-------+-------+
+|   Class   | Fscore | Precision | Recall |  IoU  |  Acc  |
++-----------+--------+-----------+--------+-------+-------+
+| unchanged | 99.77  |   99.71   | 99.84  | 99.55 | 99.84 |
+|  changed  | 94.75  |   96.16   | 93.39  | 90.03 | 93.39 |
++-----------+--------+-----------+--------+-------+-------+
+2024/02/10 02:28:18 - mmengine - INFO - Epoch(test) [191/191]    aAcc: 99.5600  mFscore: 97.2600  mPrecision: 97.9300  mRecall: 96.6100  mIoU: 94.7900  mAcc: 96.6100  data_time: 0.0680  time: 0.3036
