@@ -23,7 +23,6 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/mtp-advancing-remote-sensing-foundation-model/object-detection-in-aerial-images-on-dior-r)](https://paperswithcode.com/sota/object-detection-in-aerial-images-on-dior-r?p=mtp-advancing-remote-sensing-foundation-model)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/mtp-advancing-remote-sensing-foundation-model/object-detection-in-aerial-images-on-fair1m-2)](https://paperswithcode.com/sota/object-detection-in-aerial-images-on-fair1m-2?p=mtp-advancing-remote-sensing-foundation-model)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/mtp-advancing-remote-sensing-foundation-model/object-detection-in-aerial-images-on-dota-1)](https://paperswithcode.com/sota/object-detection-in-aerial-images-on-dota-1?p=mtp-advancing-remote-sensing-foundation-model)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/mtp-advancing-remote-sensing-foundation-model/oriented-object-detction-on-dota-2-0)](https://paperswithcode.com/sota/oriented-object-detction-on-dota-2-0?p=mtp-advancing-remote-sensing-foundation-model)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/mtp-advancing-remote-sensing-foundation-model/semantic-segmentation-on-spacenet-1)](https://paperswithcode.com/sota/semantic-segmentation-on-spacenet-1?p=mtp-advancing-remote-sensing-foundation-model)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/mtp-advancing-remote-sensing-foundation-model/semantic-segmentation-on-loveda)](https://paperswithcode.com/sota/semantic-segmentation-on-loveda?p=mtp-advancing-remote-sensing-foundation-model)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/mtp-advancing-remote-sensing-foundation-model/change-detection-on-oscd-3ch)](https://paperswithcode.com/sota/change-detection-on-oscd-3ch?p=mtp-advancing-remote-sensing-foundation-model)
@@ -45,6 +44,10 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 > Other applications: [ViTAE](https://github.com/ViTAE-Transformer/ViTAE-Transformer) | [VSA](https://github.com/ViTAE-Transformer/ViTAE-VSA) | [QFormer](https://github.com/ViTAE-Transformer/QFormer) | [ViTPose](https://github.com/ViTAE-Transformer/ViTPose) | [Matting](https://github.com/ViTAE-Transformer/ViTAE-Transformer-Matting) | [Scene Text Spotting](https://github.com/ViTAE-Transformer/ViTAE-Transformer-Scene-Text-Detection)  | [Video Object Segmentation](https://github.com/ViTAE-Transformer/VOS-LLB)
 
 # 🔥 Update
+
+**2024.05.24**
+
+- Accepted by ***IEEE JSTARS Special issue on "Large-Scale Pretraining for Interpretation Promotion in Remote Sensing Domain"***
 
 **2024.03.30**
 
