@@ -1,7 +1,7 @@
 <h1 align="center"> MTP: Advancing Remote Sensing Foundation Model via Multi-Task Pretraining </h1>
 
 <p align="center">
-<a href="https://arxiv.org/abs/2403.13430"><img src="https://img.shields.io/badge/arXiv-Paper-<color>"></a>
+<a href="https://arxiv.org/abs/2403.13430"><img src="https://img.shields.io/badge/arXiv-Paper-<color>"></a> <a href="https://ieeexplore.ieee.org/document/10547536"><img src="https://img.shields.io/badge/JSTARS-Paper-green"></a>
 </p>
 
 <h5 align="center"><em>Di Wang, Jing Zhang, Minqiang Xu, Lin Liu, Dongsheng Wang, Erzhong Gao, Chengxi Han, Haonan Guo,  Bo Du, 
@@ -446,12 +446,15 @@ The remaining steps are the same as regular testing.
 If you find MTP helpful, please consider giving this repo a ⭐ and citing:
 
 ```
-@article{MTP,
-  title={{MTP}: Advancing Remote Sensing Foundation Model via Multi-Task Pretraining},
-  author={Di Wang, Jing Zhang, Minqiang Xu, Lin Liu, Dongsheng Wang, Erzhong Gao, Chengxi Han, Haonan Guo, Bo Du, Dacheng Tao, Liangpei Zhang},
-  journal={arXiv preprint arXiv:2403.13430},
-  year={2024}
-}
+@ARTICLE{MTP,
+  author={Wang, Di and Zhang, Jing and Xu, Minqiang and Liu, Lin and Wang, Dongsheng and Gao, Erzhong and Han, Chengxi and Guo, Haonan and Du, Bo and Tao, Dacheng and Zhang, Liangpei},
+  journal={IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing}, 
+  title={MTP: Advancing Remote Sensing Foundation Model Via Multi-Task Pretraining}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1-24},
+  doi={10.1109/JSTARS.2024.3408154}}
 ```
 
 ## 🎺 Statement
