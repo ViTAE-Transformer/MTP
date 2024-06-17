@@ -85,7 +85,7 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 
 - The paper is post on arxiv!
 
-# 🌞 Overview
+# 🌞Overview
 
 This is the official repository of the paper: <a href="https://arxiv.org/abs/2403.13430">  MTP: Advancing Remote Sensing Foundation Model via Multi-Task Pretraining </a>
 
