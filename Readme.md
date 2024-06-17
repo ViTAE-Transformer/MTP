@@ -9,11 +9,11 @@
 Dacheng Tao and Liangpei Zhang</em></h5>
 
 <p align="center">
-  <a href="#🔥-update">Update</a> |
-  <a href="#overview">Overview</a> |
-  <a href="#📖-datasets-and-models">Datasets and Models</a> |
-  <a href="#🛠️-usage">Usage</a> |
-  <a href="#🎺-statement">Statement</a>
+  <a href="#-update">Update</a> |
+  <a href="#-overview">Overview</a> |
+  <a href="#-datasets-and-models">Datasets and Models</a> |
+  <a href="#-usage">Usage</a> |
+  <a href="#-statement">Statement</a>
 </p >
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/mtp-advancing-remote-sensing-foundation-model/image-classification-on-eurosat)](https://paperswithcode.com/sota/image-classification-on-eurosat?p=mtp-advancing-remote-sensing-foundation-model)
@@ -85,7 +85,7 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 
 - The paper is post on arxiv!
 
-# 🌞Overview
+# 🌞 Overview
 
 This is the official repository of the paper: <a href="https://arxiv.org/abs/2403.13430">  MTP: Advancing Remote Sensing Foundation Model via Multi-Task Pretraining </a>
 
@@ -183,7 +183,7 @@ We have uploaded SOTA-RBB to [OneDive](https://1drv.ms/f/s!AimBgYV7JjTlgckJ0Xip2
 | IMP + MTP | SVCD/CDD | InternImage-XL | UNet | 98.33 | [Config](https://github.com/ViTAE-Transformer/MTP/tree/main/RS_Tasks_Finetune/Change_Detection/configs/mtp) | [Log](https://github.com/ViTAE-Transformer/MTP/tree/main/RS_Tasks_Finetune/Change_Detection/logs) |  [Baidu](https://pan.baidu.com/s/1-FYYGUmzIMbsbgpde7l0uw?pwd=by7w) & [OneDrive](https://1drv.ms/f/s!AiSncQLqo7V6gVjJ6TUTsQg62SaO?e=bxFnH5) |
 
 
-# 🛠️ Usage
+# 🔧 Usage
 
 ## Environment
 
