@@ -10,7 +10,7 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 
 <p align="center">
   <a href="#🔥-update">Update</a> |
-  <a href="#🌞-overview">Overview</a> |
+  <a href="#overview">Overview</a> |
   <a href="#📖-datasets-and-models">Datasets and Models</a> |
   <a href="#🛠️-usage">Usage</a> |
   <a href="#🎺-statement">Statement</a>
