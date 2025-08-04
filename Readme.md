@@ -47,6 +47,16 @@ Dacheng Tao and Liangpei Zhang</em></h5>
 
 **2024.05.24**
 
+- 🏆 MTP got the highly cited paper!
+
+<figure>
+<div align="center">
+<img src=mtp_highlycited.png width="100%">
+</div>
+</figure>
+
+**2024.05.24**
+
 - Accepted by ***IEEE JSTARS Special issue on "Large-Scale Pretraining for Interpretation Promotion in Remote Sensing Domain"***
 
 **2024.03.30**
